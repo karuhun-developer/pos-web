@@ -22,6 +22,7 @@
                     <tbody>
                         @forelse($get as $d)
                             <tr>
+                                <td>{{ $d->category_name }}</td>
                                 <td>{{ $d->name }}</td>
                                 <td>{{ $d->description }}</td>
                                 <td>
@@ -50,6 +51,17 @@
     {{-- Create / Update Modal --}}
     <x-acc-modal title="{{ $isUpdate ? 'Update' : 'Create' }} {{ $title }}" :isModaOpen="$modals['defaultModal']">
         <x-acc-form submit="save">
+            <div class="col-md-12">
+                <div class="mb-3">
+                    <label class="form-label">Category <x-acc-required /></label>
+                    <x-acc-input type="select" model="form.product_category_id" icon="fa fa-lock">
+                        <option value="">-- Select Category --</option>
+                        @foreach($categories as $category)
+                            <option value="{{ $category->id }}">{{ $category->name }}</option>
+                        @endforeach
+                    </x-acc-input>
+                </div>
+            </div>
             <div class="col-md-12">
                 <div class="mb-3">
                     <label class="form-label">Name <x-acc-required /></label>
