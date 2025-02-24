@@ -46,6 +46,12 @@ class MenuSeeder extends Seeder
             'route' => 'cms.product.sub-category',
             'ordering' => '2',
         ]);
+        $product->menuChildren()->create([
+            'name' => 'Merk',
+            'icon' => '#',
+            'route' => 'cms.product.merk',
+            'ordering' => '3',
+        ]);
     }
 
     public function managementMenu() {
