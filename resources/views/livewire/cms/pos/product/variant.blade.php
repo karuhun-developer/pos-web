@@ -2,7 +2,7 @@
     <h1 class="h3 mb-3">
         {{ $title ?? '' }}
     </h1>
-
+    <x-acc-back route="cms.product.index" />
     <div class="card">
         <div class="card-header">
             <h5 class="card-title">{{ $title ?? '' }} Data</h5>
@@ -22,9 +22,6 @@
                     <tbody>
                         @forelse($get as $d)
                             <tr>
-                                <td>{{ $d->category_name }}</td>
-                                <td>{{ $d->sub_category_name ?? '-' }}</td>
-                                <td>{{ $d->merk_name ?? '-' }}</td>
                                 <td>{{ $d->sku }}</td>
                                 <td>{{ $d->name }}</td>
                                 <td>
@@ -39,16 +36,7 @@
                                         {{ $d->status->label() }}
                                     </span>
                                 </td>
-                                <x-acc-update-delete :id="$d->id" :$originRoute editClick="customEdit">
-                                    <a class="dropdown-item" href="{{ route('cms.product.variant', [
-                                        'productId' => $d->id,
-                                    ]) }}" wire:navigate>
-                                        <i class="fa fa-cube"></i>
-                                        <span class="ms-2">
-                                            Variant
-                                        </span>
-                                    </a>
-                                </x-acc-update-delete>
+                                <x-acc-update-delete :id="$d->id" :$originRoute />
                             </tr>
                         @empty
                             <tr>
@@ -68,40 +56,7 @@
 
     {{-- Create / Update Modal --}}
     <x-acc-modal title="{{ $isUpdate ? 'Update' : 'Create' }} {{ $title }}" size="lg" :isModaOpen="$modals['defaultModal']">
-        <x-acc-form submit="save">
-            <div class="col-md-6">
-                <div class="mb-3">
-                    <label class="form-label">Category <x-acc-required /></label>
-                    <x-acc-input type="select" model="form.product_category_id" :live="true" wire:change="getSubCategories" icon="fa fa-cube">
-                        <option value="">--Select Category--</option>
-                        @foreach($categories as $category)
-                            <option value="{{ $category->id }}">{{ $category->name }}</option>
-                        @endforeach
-                    </x-acc-input>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="mb-3">
-                    <label class="form-label">Sub Category </label>
-                    <x-acc-input type="select" model="form.product_sub_category_id" id="product_sub_category_id" icon="fa fa-cube">
-                        <option value="">--Select Sub Category--</option>
-                        @foreach($subCategories as $subCategory)
-                            <option value="{{ $subCategory->id }}">{{ $subCategory->name }}</option>
-                        @endforeach
-                    </x-acc-input>
-                </div>
-            </div>
-            <div class="col-md-12">
-                <div class="mb-3">
-                    <label class="form-label">Merk</label>
-                    <x-acc-input type="select" model="form.merk_id" icon="fa fa-cube">
-                        <option value="">--Select Merk--</option>
-                        @foreach($merks as $merk)
-                            <option value="{{ $merk->id }}">{{ $merk->name }}</option>
-                        @endforeach
-                    </x-acc-input>
-                </div>
-            </div>
+        <x-acc-form submit="customSave">
             <div class="col-md-6">
                 <div class="mb-3">
                     <label class="form-label">Sku <x-acc-required /></label>
