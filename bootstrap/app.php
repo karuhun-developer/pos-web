@@ -19,10 +19,13 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         commands: __DIR__.'/../routes/console.php',
         using: function () {
+            // Version 1 API routes
             Route::middleware('api')
-                ->prefix('api')
-                ->group(base_path('routes/api.php'));
+                ->prefix('api/v1')
+                ->as('api.v1.')
+                ->group(base_path('routes/api/v1.php'));
 
+            // Web routes
             Route::middleware('web')
                 ->group(base_path('routes/web.php'));
         },
