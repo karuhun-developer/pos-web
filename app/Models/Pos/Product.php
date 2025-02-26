@@ -38,15 +38,15 @@ class Product extends Model implements HasMedia
     }
 
     public function category() {
-        return $this->belongsTo(ProductCategory::class);
+        return $this->belongsTo(ProductCategory::class, 'product_category_id');
     }
 
     public function subCategory() {
-        return $this->belongsTo(ProductSubCategory::class);
+        return $this->belongsTo(ProductSubCategory::class, 'product_sub_category_id');
     }
 
     public function merk() {
-        return $this->belongsTo(ProductMerk::class);
+        return $this->belongsTo(ProductMerk::class, 'product_merk_id');
     }
 
     public function variants() {

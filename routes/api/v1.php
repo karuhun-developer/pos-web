@@ -22,4 +22,8 @@ Route::middleware('auth.api-key')->group(function () {
     // Product Merk
     Route::get('/product-merk', [App\Http\Controllers\Api\V1\ProductMerkController::class, 'index'])->name('product-merk.index');
     Route::get('/product-merk/{id}', [App\Http\Controllers\Api\V1\ProductMerkController::class, 'show'])->name('product-merk.show');
+
+    // Product
+    Route::get('/product', [App\Http\Controllers\Api\V1\ProductController::class, 'index'])->name('product.index');
+    Route::get('/product/{id}', [App\Http\Controllers\Api\V1\ProductController::class, 'show'])->name('product.show');
 });
