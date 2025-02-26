@@ -58,13 +58,13 @@
             </div>
             <div class="col-md-12">
                 <div class="mb-3">
-                    <label class="form-label">Description</label>
+                    <label class="form-label">Description <x-acc-required /></label>
                     <x-acc-input type="textarea" model="form.description" placeholder="Description" icon="fa fa-list" />
                 </div>
             </div>
             <div class="col-md-12">
                 <div class="mb-3">
-                    <label class="form-label">Status</label>
+                    <label class="form-label">Status <x-acc-required /></label>
                     <x-acc-input type="select" model="form.status" icon="fa fa-lock">
                         <option value="">-- Select Status --</option>
                         @foreach(App\Enums\CommonStatusEnum::cases() as $status)
