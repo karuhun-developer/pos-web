@@ -5,6 +5,9 @@ use Illuminate\Support\Facades\Route;
 // Welcome message
 Route::get('/', fn () => response()->json(['message' => 'Welcome to the API v1']), 200)->name('welcome');
 
+// Login
+Route::post('/login', [App\Http\Controllers\Api\V1\AuthController::class, 'login'])->name('login');
+
 Route::middleware('auth.api-key')->group(function () {
     // Me
     Route::get('/me', function() {
@@ -14,6 +17,8 @@ Route::middleware('auth.api-key')->group(function () {
             'data' => auth()->user(),
         ], 200);
     })->name('me');
+    // Logout
+    Route::post('/logout', [App\Http\Controllers\Api\V1\AuthController::class, 'logout'])->name('logout');
 
     // Product Category
     Route::get('/product-category', [App\Http\Controllers\Api\V1\ProductCategoryController::class, 'index'])->name('product-category.index');
