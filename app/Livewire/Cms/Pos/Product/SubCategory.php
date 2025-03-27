@@ -32,7 +32,6 @@ class SubCategory extends BaseComponent
             ],
         ],
         $search = '',
-        $isUpdate = false,
         $paginate = 10,
         $orderBy = 'product_sub_categories.name',
         $order = 'asc';

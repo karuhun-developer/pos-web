@@ -1,7 +1,7 @@
 <div>
-    <h1 class="h3 mb-3">
+    <x-slot:page-title>
         {{ $title ?? '' }}
-    </h1>
+    </x-slot:page-title>
 
     <div class="card">
         <div class="card-header">
@@ -53,7 +53,7 @@
     </div>
 
     {{-- Create / Update Modal --}}
-    <x-acc-modal title="{{ $isUpdate ? 'Update' : 'Create' }} {{ $title }}" :isModaOpen="$modals['defaultModal']">
+    <x-acc-modal title="{{ $isUpdate ? 'Update' : 'Create' }} {{ $title }}" modal="acc-modal">
         <x-acc-form submit="save">
             <div class="col-md-12">
                 <div class="mb-3">

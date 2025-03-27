@@ -43,7 +43,6 @@ class Variant extends BaseComponent
             ],
         ],
         $search = '',
-        $isUpdate = false,
         $paginate = 10,
         $orderBy = 'sku',
         $order = 'asc';

@@ -55,7 +55,7 @@
     </div>
 
     {{-- Create / Update Modal --}}
-    <x-acc-modal title="{{ $isUpdate ? 'Update' : 'Create' }} {{ $title }}" size="lg" :isModaOpen="$modals['defaultModal']">
+    <x-acc-modal title="{{ $isUpdate ? 'Update' : 'Create' }} {{ $title }}" size="lg" modal="acc-modal">
         <x-acc-form submit="customSave">
             <div class="col-md-6">
                 <div class="mb-3">

@@ -26,7 +26,6 @@ class Category extends BaseComponent
             ],
         ],
         $search = '',
-        $isUpdate = false,
         $paginate = 10,
         $orderBy = 'name',
         $order = 'asc';

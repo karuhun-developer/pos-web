@@ -57,7 +57,6 @@ class Index extends BaseComponent
             ],
         ],
         $search = '',
-        $isUpdate = false,
         $paginate = 10,
         $orderBy = 'products.sku',
         $order = 'asc';

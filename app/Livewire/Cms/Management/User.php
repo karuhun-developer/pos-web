@@ -27,12 +27,10 @@ class User extends BaseComponent
             ],
         ],
         $search = '',
-        $isUpdate = false,
         $paginate = 10,
         $orderBy = 'users.name',
         $order = 'asc';
 
-    public $isModalPasswordOpen = false;
     public $roles = [];
 
     public function mount() {
@@ -71,14 +69,10 @@ class User extends BaseComponent
         $this->openModal('updatePasswordModal');
     }
 
-    public function closeModalUpdatePassword() {
-        $this->closeModal('updatePasswordModal');
-    }
-
     public function changePassword() {
         $this->form->changePassword();
         $this->closeModalUpdatePassword();
 
-        session()->flash('success', 'Password has been changed');
+        $this->dispatch('alert', type: 'success', message: 'Password has been changed');
     }
 }
