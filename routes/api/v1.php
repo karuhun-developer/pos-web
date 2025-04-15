@@ -31,4 +31,9 @@ Route::middleware('auth.api-key')->group(function () {
     // Product
     Route::get('/product', [App\Http\Controllers\Api\V1\ProductController::class, 'index'])->name('product.index');
     Route::get('/product/{id}', [App\Http\Controllers\Api\V1\ProductController::class, 'show'])->name('product.show');
+
+    // Transaction
+    Route::get('/transaction', [App\Http\Controllers\Api\V1\TransactionController::class, 'index'])->name('transaction.index');
+    Route::get('/transaction/{id}', [App\Http\Controllers\Api\V1\TransactionController::class, 'show'])->name('transaction.show');
+    Route::post('/transaction', [App\Http\Controllers\Api\V1\TransactionController::class, 'create'])->name('transaction.create');
 });

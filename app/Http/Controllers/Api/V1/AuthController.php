@@ -8,9 +8,7 @@ use Illuminate\Http\Request;
 class AuthController extends Controller
 {
     public function login(Request $request) {
-        if (!$token = auth()->attempt($request->only('email', 'password'))) {
-            return $this->responseWithError('Unauthorized', 401);
-        }
+        if (!auth()->attempt($request->only('email', 'password'))) return $this->responseWithError('Unauthorized', 401);
 
         return $this->responseWithSuccess([
             'token' => auth()->user()->createToken('API Token')->plainTextToken,

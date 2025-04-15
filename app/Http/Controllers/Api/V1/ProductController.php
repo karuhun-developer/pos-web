@@ -20,6 +20,33 @@ class ProductController extends Controller
             ->leftJoin('product_merks', 'products.product_merk_id', '=', 'product_merks.id')
             ->select('products.*');
 
+        // Check if has product_category_id
+        if($request?->product_category_id) {
+            $model->where(function($query) use ($request) {
+                foreach($request->product_category_id as $categoryId) {
+                    $query->orWhere('products.product_category_id', $categoryId);
+                }
+            });
+        }
+
+        // Check if has product_sub_category_id
+        if($request?->product_sub_category_id) {
+            $model->where(function($query) use ($request) {
+                foreach($request->product_sub_category_id as $subCategoryId) {
+                    $query->orWhere('products.product_sub_category_id', $subCategoryId);
+                }
+            });
+        }
+
+        // Check if has product_merk_id
+        if($request?->product_merk_id) {
+            $model->where(function($query) use ($request) {
+                foreach($request->product_merk_id as $merkId) {
+                    $query->orWhere('products.product_merk_id', $merkId);
+                }
+            });
+        }
+
         $data = $this->getDataWithFilter(
             model: $model,
             searchBy: [
