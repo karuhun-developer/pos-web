@@ -94,7 +94,7 @@
             <div class="col-md-12">
                 <div class="mb-3">
                     <label class="form-label">Merk</label>
-                    <x-acc-input type="select" model="form.merk_id" icon="fa fa-cube">
+                    <x-acc-input type="select" model="form.product_merk_id" icon="fa fa-cube">
                         <option value="">--Select Merk--</option>
                         @foreach($merks as $merk)
                             <option value="{{ $merk->id }}">{{ $merk->name }}</option>
