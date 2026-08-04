@@ -10,6 +10,10 @@ Format mengikuti [Keep a Changelog](https://keepachangelog.com/) & [SemVer](http
   toko default (`owner`) via `EnsureUserHasStore`, terbitkan Sanctum token, balas
   `201 { token, user, stores }`. Validasi email unik & password min 6. Test:
   `tests/Feature/AuthRegisterTest.php`.
+- **Manajemen outlet in-app**: `POST /stores` (buat outlet baru, pembuat jadi
+  `owner`, balas `201 { store, stores }`) & `PATCH /stores/{id}` (ganti nama,
+  khusus owner → `403` selain owner). Action `CreateStore`. Test:
+  `tests/Feature/StoreManagementTest.php` (5 kasus).
 
 ## [0.1.0] — 2026-08-04 · Phase 6
 

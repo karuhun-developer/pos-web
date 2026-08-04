@@ -125,6 +125,23 @@ token — biar user tanpa akun bisa langsung mulai dari app.
 Toko aktif ditentukan oleh header `X-Store-Id: <store-uuid>` (opsional; default =
 `user.current_store_id`). Semua endpoint sync ter-scope ke toko aktif ini.
 
+### `POST /stores` — Buat outlet baru
+
+Membuat outlet/toko baru; user pembuat otomatis jadi `owner`. Tidak mengubah
+toko aktif (klien yang memutuskan berpindah).
+
+**Request** `{ "name": "Cabang Bandung" }`
+**201 Created** `{ "store": { "id", "name", "role": "owner" }, "stores": [ ... ] }`
+(`stores` = daftar terbaru). **422** — nama kosong.
+
+### `PATCH /stores/{id}` — Ganti nama outlet
+
+Hanya **owner** outlet tersebut yang boleh.
+
+**Request** `{ "name": "Cabang Bandung Kota" }`
+**200 OK** `{ "store": { "id", "name", "role" } }`
+**403** — bukan anggota / bukan owner outlet. **422** — nama kosong.
+
 ---
 
 ## 3. Sinkronisasi
