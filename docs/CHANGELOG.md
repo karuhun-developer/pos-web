@@ -5,6 +5,12 @@ Format mengikuti [Keep a Changelog](https://keepachangelog.com/) & [SemVer](http
 
 ## [Unreleased]
 
+### Added
+- **`POST /auth/register`** — registrasi akun baru email/password: buat user +
+  toko default (`owner`) via `EnsureUserHasStore`, terbitkan Sanctum token, balas
+  `201 { token, user, stores }`. Validasi email unik & password min 6. Test:
+  `tests/Feature/AuthRegisterTest.php`.
+
 ## [0.1.0] — 2026-08-04 · Phase 6
 
 Rilis pertama backend sinkronisasi. Menaikkan POS Kacaw dari single-device jadi

@@ -101,6 +101,15 @@ Buat pengembangan/test otomatis. Boleh dinonaktifkan di produksi.
 **Request** `{ "email": "budi@toko.com", "password": "secret" }`
 **200 OK** — bentuk sama dengan `/auth/google`. **422** — kredensial salah.
 
+### `POST /auth/register` — Daftar akun baru (email/password)
+
+Buat user baru lalu otomatis bikin toko default (user jadi `owner`) dan terbitkan
+token — biar user tanpa akun bisa langsung mulai dari app.
+
+**Request** `{ "name": "Sari Warung", "email": "sari@warung.com", "password": "rahasia123" }`
+**201 Created** — bentuk sama dengan `/auth/login` (`{ token, user, stores }`).
+**422** — email sudah dipakai / field wajib kosong / password < 6 karakter.
+
 ### `GET /auth/me` — Profil + daftar toko
 
 **200 OK** `{ "user": { ... }, "stores": [ ... ] }` (bentuk sama seperti di atas).
