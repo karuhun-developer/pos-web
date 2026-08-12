@@ -41,6 +41,19 @@ it('includes tombstones in pull', function () {
         ->and($res->json('changes.0.deleted_at'))->toBe(ms(300));
 });
 
+it('includes barcode_type in pull payloads', function () {
+    $this->postJson('/api/v1/sync/push', [
+        'changes' => [envelope('products', 'insert', productPayload([
+            'barcode' => '8991002101234',
+            'barcode_type' => 'EAN13',
+        ]))],
+    ])->assertOk();
+
+    $row = $this->getJson('/api/v1/sync/pull?entity=products&since=0')->json('changes.0');
+    expect($row['barcode'])->toBe('8991002101234')
+        ->and($row['barcode_type'])->toBe('EAN13');
+});
+
 it('does not leak server-only columns in pull payloads', function () {
     $this->postJson('/api/v1/sync/push', [
         'changes' => [envelope('products', 'insert', productPayload())],

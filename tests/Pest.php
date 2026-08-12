@@ -72,6 +72,7 @@ function productPayload(array $overrides = []): array
         'name' => 'Kopi Susu',
         'sku' => null,
         'barcode' => null,
+        'barcode_type' => 'EAN13',
         'price' => 18000,
         'cost' => 9000,
         'track_stock' => 0,

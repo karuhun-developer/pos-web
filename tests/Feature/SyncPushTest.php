@@ -59,6 +59,34 @@ it('turns a delete into a tombstone', function () {
     expect($row->deleted_at)->toBe(ms(300));
 });
 
+it('stores barcode and barcode_type from the client', function () {
+    $this->postJson('/api/v1/sync/push', [
+        'changes' => [envelope('products', 'insert', productPayload([
+            'barcode' => '8991002101234',
+            'barcode_type' => 'EAN13',
+        ]))],
+    ])->assertOk();
+
+    $this->assertDatabaseHas('products', [
+        'id' => 'prod-1',
+        'barcode' => '8991002101234',
+        'barcode_type' => 'EAN13',
+    ]);
+});
+
+it('falls back to the column default when an old client omits barcode_type', function () {
+    // Klien versi lama belum punya kolom barcode_type — payload-nya sengaja
+    // dihapus kolomnya, bukan dikirim null (kolomnya NOT NULL).
+    $payload = productPayload();
+    unset($payload['barcode_type']);
+
+    $this->postJson('/api/v1/sync/push', [
+        'changes' => [envelope('products', 'insert', $payload)],
+    ])->assertOk()->assertJsonPath('rejected', []);
+
+    $this->assertDatabaseHas('products', ['id' => 'prod-1', 'barcode_type' => 'EAN13']);
+});
+
 it('rejects unknown and forbidden entities', function () {
     $res = $this->postJson('/api/v1/sync/push', [
         'changes' => [
