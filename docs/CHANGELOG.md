@@ -6,6 +6,17 @@ Format mengikuti [Keep a Changelog](https://keepachangelog.com/) & [SemVer](http
 ## [Unreleased]
 
 ### Added
+- **Kolom `products.barcode_type`** (`string(20)`, default **`EAN13`**) + index
+  `(store_id, barcode)` — simbologi barcode yang dipakai klien buat merender &
+  memvalidasi lewat JsBarcode. **Tidak ada perubahan kode sync**: `ApplyChange` dan
+  `PullChanges` schema-driven, jadi kolomnya langsung ikut push & pull. Klien lama
+  yang belum mengirim kolom ini jatuh ke default DB.
+  Index sengaja **bukan unique** — `PushChanges` cuma menangkap `SyncRejection`,
+  jadi pelanggaran unique bakal melempar `QueryException` mentah dan menggagalkan
+  seluruh batch; keunikan barcode ditegakkan di klien.
+  Catatan operasional: `ApplyChange::$columnCache` static per-proses → **restart
+  worker/Octane setelah `migrate`**.
+  Test: `SyncPushTest` (dengan & tanpa `barcode_type`), `SyncPullTest`.
 - **`POST /auth/register`** — registrasi akun baru email/password: buat user +
   toko default (`owner`) via `EnsureUserHasStore`, terbitkan Sanctum token, balas
   `201 { token, user, stores }`. Validasi email unik & password min 6. Test:
