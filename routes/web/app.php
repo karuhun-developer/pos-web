@@ -64,6 +64,7 @@ Route::middleware(['auth', 'store'])->group(function () {
 
     // Laporan & chart
     Route::get('laporan', [ReportController::class, 'index'])->name('reports.index');
+    Route::get('laporan/cetak', [ReportController::class, 'print'])->name('reports.print');
 
     // Impor/ekspor
     Route::prefix('impor-ekspor')->name('io.')->group(function () {

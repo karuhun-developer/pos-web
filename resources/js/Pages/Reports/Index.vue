@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { onUnmounted, ref } from 'vue'
+import { computed, onUnmounted, ref } from 'vue'
 import { Link, router } from '@inertiajs/vue3'
-import { Download } from '@lucide/vue'
+import { Download, Printer } from '@lucide/vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import StatTile from '@/Components/StatTile.vue'
 import PeriodFilter from '@/Components/reports/PeriodFilter.vue'
@@ -38,6 +38,16 @@ const props = defineProps<{
   inventory: InventorySnapshot
 }>()
 
+// Rentang aktif ikut ke halaman cetak — kertasnya harus memuat angka yang
+// sama persis dengan yang sedang dilihat di layar.
+const printUrl = computed(() =>
+  route('reports.print', {
+    preset: props.period.preset,
+    from: props.period.preset === 'custom' ? props.period.from : undefined,
+    to: props.period.preset === 'custom' ? props.period.to : undefined,
+  }),
+)
+
 /*
  * Saat rentang diganti, panel lama ditahan dengan opacity turun alih-alih
  * diganti skeleton: tinggi halaman tidak berubah, jadi tidak ada lompatan
@@ -57,13 +67,27 @@ onUnmounted(() => stop.forEach((off) => off()))
     <div class="flex flex-wrap items-center justify-between gap-3">
       <PeriodFilter :period="props.period" />
 
-      <Link
-        :href="route('io.index')"
-        class="inline-flex h-9 items-center gap-2 rounded-xl border border-border-strong bg-surface-raised px-3 text-xs font-medium text-ink hover:bg-surface-sunken"
-      >
-        <Download class="size-4" />
-        Ekspor data
-      </Link>
+      <div class="flex items-center gap-2">
+        <!-- Halaman cetak bukan Inertia (HTML polos untuk kertas), jadi <a>
+             biasa ke tab baru — bukan <Link>, yang akan mencoba mem-boot Vue. -->
+        <a
+          :href="printUrl"
+          target="_blank"
+          rel="noopener"
+          class="inline-flex h-9 items-center gap-2 rounded-xl border border-border-strong bg-surface-raised px-3 text-xs font-medium text-ink hover:bg-surface-sunken"
+        >
+          <Printer class="size-4" />
+          Cetak / PDF
+        </a>
+
+        <Link
+          :href="route('io.index')"
+          class="inline-flex h-9 items-center gap-2 rounded-xl border border-border-strong bg-surface-raised px-3 text-xs font-medium text-ink hover:bg-surface-sunken"
+        >
+          <Download class="size-4" />
+          Ekspor data
+        </Link>
+      </div>
     </div>
 
     <div class="mt-4 space-y-4 transition-opacity duration-150" :class="loading ? 'opacity-60' : 'opacity-100'">
