@@ -93,7 +93,7 @@ it('filters donations and keeps totals in step with the table', function () {
     ]);
     Donation::create([
         'order_id' => 'DON-2', 'donor_name' => 'Budi', 'amount' => 25000,
-        'channel' => 'paywuz', 'status' => 'pending',
+        'channel' => 'external', 'status' => 'cancelled',
     ]);
 
     $this->actingAs($superadmin)
@@ -102,7 +102,7 @@ it('filters donations and keeps totals in step with the table', function () {
         ->assertInertia(fn (AssertableInertia $page) => $page
             ->component('Admin/Donations/Index')
             ->has('donations.data', 2)
-            ->where('totals.amount', 50000)   // pending belum dihitung terkumpul
+            ->where('totals.amount', 50000)   // yang dibatalkan tidak ikut terkumpul
             ->where('totals.pending', 1));
 
     $this->actingAs($superadmin)

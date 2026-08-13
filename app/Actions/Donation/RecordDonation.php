@@ -7,10 +7,8 @@ use App\Models\User;
 use Illuminate\Support\Str;
 
 /**
- * Membuat baris donasi. Dipakai jalur manual (langsung `recorded`) maupun
- * Paywuz (mulai dari `pending`) supaya bentuk datanya persis sama.
- *
- * Transfer manual tidak diverifikasi sama sekali — lihat config/donation.php.
+ * Membuat baris donasi. Tidak ada verifikasi apa pun: donatur transfer
+ * sendiri lalu mencatatkannya di sini, dan superadmin yang mencocokkan.
  */
 class RecordDonation
 {

@@ -15,7 +15,7 @@ import type { Paginated, Sale } from '@/types'
 
 const props = defineProps<{
   sales: Paginated<Sale>
-  filters: { q: string; status: string; method: string | null; from: string | null; to: string | null }
+  filters: { q: string; status: string; method: string | null; from: string; to: string }
   summary: { orders: number; revenue: number }
   payment_methods: string[]
 }>()
@@ -23,8 +23,8 @@ const props = defineProps<{
 const search = ref(props.filters.q)
 const status = ref(props.filters.status)
 const method = ref(props.filters.method ?? '')
-const from = ref(props.filters.from ?? '')
-const to = ref(props.filters.to ?? '')
+const from = ref(props.filters.from)
+const to = ref(props.filters.to)
 
 const COLUMNS = [
   { key: 'number', label: 'Nomor' },
@@ -48,8 +48,11 @@ function apply() {
       q: search.value || undefined,
       status: status.value,
       method: method.value || undefined,
-      from: from.value || undefined,
-      to: to.value || undefined,
+      // Dikirim apa adanya, termasuk saat kosong: `?from=` berarti "tanpa
+      // batas". Kalau di-undefined-kan, rentang bawaannya kembali dipakai dan
+      // filter tanggal jadi tidak bisa dikosongkan.
+      from: from.value,
+      to: to.value,
     },
     { preserveState: true, preserveScroll: true, replace: true },
   )

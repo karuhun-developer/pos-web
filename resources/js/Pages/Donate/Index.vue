@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { Link, useForm, usePage } from '@inertiajs/vue3'
-import { Building2, ExternalLink, Heart, QrCode, Sparkles, Wallet } from '@lucide/vue'
+import { Building2, ExternalLink, Heart, QrCode, Sparkles } from '@lucide/vue'
 import GuestLayout from '@/Layouts/GuestLayout.vue'
 import Button from '@/Components/ui/Button.vue'
 import Card from '@/Components/ui/Card.vue'
@@ -28,7 +28,6 @@ const props = defineProps<{
   presets: number[]
   limits: { min: number; max: number }
   manual: ManualChannel | null
-  paywuz_enabled: boolean
   external: Array<{ label: string; url: string }>
   wall: WallEntry[]
   supporters: number
@@ -42,7 +41,7 @@ const form = useForm({
   donor_email: props.donor?.email ?? '',
   amount: props.presets[1] ?? props.limits.min,
   message: '',
-  channel: props.paywuz_enabled ? 'paywuz' : 'manual',
+  channel: 'manual',
   is_anonymous: false,
 })
 
@@ -50,24 +49,16 @@ const custom = ref(false)
 
 /** Kanal yang benar-benar bisa dipakai — kanal yang belum dikonfigurasi tidak ditawarkan. */
 const channels = computed(() =>
-  [
-    props.paywuz_enabled
-      ? {
-          value: 'paywuz',
-          label: 'Bayar online',
-          hint: 'QRIS, e-wallet, atau virtual account lewat Paywuz.',
-          icon: Wallet,
-        }
-      : null,
-    props.manual
-      ? {
+  props.manual
+    ? [
+        {
           value: 'manual',
           label: 'Transfer manual',
           hint: 'Transfer sendiri lalu catat di sini. Tidak ada verifikasi.',
           icon: Building2,
-        }
-      : null,
-  ].filter((channel) => channel !== null),
+        },
+      ]
+    : [],
 )
 
 function pick(amount: number) {
@@ -249,13 +240,7 @@ const formatted = computed(() => formatRupiah(form.amount))
                   <Heart class="size-4" />
                   Donasi {{ formatted }}
                 </Button>
-                <p class="text-xs text-ink-subtle">
-                  {{
-                    form.channel === 'paywuz'
-                      ? 'Kamu akan diarahkan ke halaman pembayaran.'
-                      : 'Nomor rekening ditampilkan di langkah berikutnya.'
-                  }}
-                </p>
+                <p class="text-xs text-ink-subtle">Nomor rekening ditampilkan di langkah berikutnya.</p>
               </div>
             </form>
           </Card>

@@ -2,22 +2,19 @@
 
 namespace App\Http\Controllers\Web;
 
-use App\Actions\Donation\CreateDonationCheckout;
 use App\Actions\Donation\RecordDonation;
-use App\Exceptions\PaywuzException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Web\DonationRequest;
 use App\Models\Donation;
-use App\Services\PaywuzClient;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 /**
- * Halaman donasi publik. Tiga kanal, dan yang tampil hanya yang benar-benar
- * bisa dipakai: kanal manual butuh nomor rekening di config, Paywuz butuh API
- * key, tautan eksternal butuh URL-nya.
+ * Halaman donasi publik. Yang tampil hanya kanal yang benar-benar bisa
+ * dipakai: transfer butuh nomor rekening atau QRIS terisi, tautan eksternal
+ * butuh URL-nya.
  */
 class DonationController extends Controller
 {
@@ -30,7 +27,6 @@ class DonationController extends Controller
                 'max' => (int) config('donation.max'),
             ],
             'manual' => $this->manualChannel(),
-            'paywuz_enabled' => PaywuzClient::configured(),
             'external' => $this->externalLinks(),
             'wall' => $this->wall(),
             'supporters' => Donation::whereIn('status', ['recorded', 'paid'])->count(),
@@ -38,35 +34,13 @@ class DonationController extends Controller
         ]);
     }
 
-    public function store(
-        DonationRequest $request,
-        RecordDonation $record,
-        CreateDonationCheckout $checkout,
-    ): RedirectResponse|Response {
-        $attributes = $request->validated();
+    public function store(DonationRequest $request, RecordDonation $record): RedirectResponse
+    {
+        abort_unless($this->manualChannel() !== null, 404);
 
-        if ($attributes['channel'] === 'manual') {
-            abort_unless($this->manualChannel() !== null, 404);
+        $donation = $record->handle($request->validated(), $request->user());
 
-            $donation = $record->handle($attributes, $request->user());
-
-            return redirect()->route('donate.thanks', $donation);
-        }
-
-        abort_unless(PaywuzClient::configured(), 404);
-
-        try {
-            $donation = $checkout->handle($attributes, $request->user());
-        } catch (PaywuzException $exception) {
-            report($exception);
-
-            return back()
-                ->withInput()
-                ->with('error', 'Pembayaran online sedang bermasalah. Coba lagi atau pakai transfer manual.');
-        }
-
-        // Inertia::location: keluar dari SPA menuju halaman pembayaran Paywuz.
-        return Inertia::location($donation->redirect_url);
+        return redirect()->route('donate.thanks', $donation);
     }
 
     public function thanks(Donation $donation): Response

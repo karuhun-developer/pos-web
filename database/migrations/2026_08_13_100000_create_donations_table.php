@@ -23,15 +23,10 @@ return new class extends Migration
             $table->string('donor_email')->nullable();
             $table->unsignedBigInteger('amount'); // rupiah bulat, sama seperti uang lain di app ini
             $table->text('message')->nullable();
-            $table->string('channel'); // manual | paywuz | external
-            $table->string('status'); // recorded | pending | paid | expired | cancelled
-            $table->string('reference')->nullable(); // id transaksi di sisi Paywuz
-            $table->string('payment_method')->nullable();
-            $table->string('redirect_url')->nullable();
+            $table->string('channel'); // manual | external
+            $table->string('status'); // recorded | paid | cancelled
             $table->boolean('is_anonymous')->default(false);
             $table->timestamp('paid_at')->nullable();
-            $table->json('raw_response')->nullable();
-            $table->json('raw_webhook')->nullable();
             $table->timestamps();
 
             // Panel superadmin memfilter dua kolom ini hampir di setiap query.

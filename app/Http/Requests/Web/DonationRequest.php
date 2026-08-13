@@ -26,7 +26,7 @@ class DonationRequest extends FormRequest
             'message' => ['nullable', 'string', 'max:300'],
             // `external` tidak pernah dikirim ke sini — kanal itu cuma tautan
             // keluar, tidak ada yang bisa dicatat dari sisi kami.
-            'channel' => ['required', Rule::in(['manual', 'paywuz'])],
+            'channel' => ['required', Rule::in(['manual'])],
             'is_anonymous' => ['boolean'],
         ];
     }

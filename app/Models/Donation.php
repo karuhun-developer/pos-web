@@ -13,27 +13,24 @@ class Donation extends Model
 {
     use HasFactory;
 
-    public const CHANNELS = ['manual', 'paywuz', 'external'];
+    public const CHANNELS = ['manual', 'external'];
 
     /**
-     * `recorded` = donatur mengaku sudah transfer manual dan kami percaya
-     * begitu saja (tanpa verifikasi); `paid` hanya dipakai kalau ada bukti
-     * dari gateway atau dikonfirmasi superadmin.
+     * `recorded` = donatur mengaku sudah transfer dan kami percaya begitu saja
+     * (tanpa verifikasi); `paid` dipakai kalau superadmin sudah mencocokkan
+     * mutasi rekening.
      */
-    public const STATUSES = ['recorded', 'pending', 'paid', 'expired', 'cancelled'];
+    public const STATUSES = ['recorded', 'paid', 'cancelled'];
 
     protected $fillable = [
         'user_id', 'order_id', 'donor_name', 'donor_email', 'amount', 'message',
-        'channel', 'status', 'reference', 'payment_method', 'redirect_url',
-        'is_anonymous', 'paid_at', 'raw_response', 'raw_webhook',
+        'channel', 'status', 'is_anonymous', 'paid_at',
     ];
 
     protected $casts = [
         'amount' => 'integer',
         'is_anonymous' => 'boolean',
         'paid_at' => 'datetime',
-        'raw_response' => 'array',
-        'raw_webhook' => 'array',
     ];
 
     /** URL halaman terima kasih memakai order_id, bukan id berurut. */

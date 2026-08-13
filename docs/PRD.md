@@ -41,7 +41,7 @@ Keputusan Phase 6 dibalik: POS Pro sekarang punya UI web di samping API-nya.
   session.
 - **Impor/ekspor lebih lengkap dari Android**: CSV/XLSX streaming + impor dengan
   pratinjau dua langkah.
-- **Donasi** (manual tanpa verifikasi, Paywuz, tautan eksternal).
+- **Donasi** (QRIS, transfer bank, Saweria — dicatat, lalu dimoderasi superadmin).
 
 Detail: [`features/web-ui.md`](features/web-ui.md),
 [`features/donations.md`](features/donations.md),

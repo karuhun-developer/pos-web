@@ -18,12 +18,16 @@ class SaleController extends Controller
     {
         $this->authorize('viewAny', Sale::class);
 
+        // Rentang bawaan sama dengan Arus Kas: awal bulan berjalan → hari ini.
+        // Tanpa default, halaman ini membuka seluruh riwayat toko sekaligus —
+        // dan ringkasan di atas tabel jadi angka sepanjang masa, bukan periode
+        // yang sedang dilihat.
         $filters = [
             'q' => trim((string) $request->query('q', '')),
             'status' => $request->query('status', 'all'),
             'method' => $request->query('method'),
-            'from' => $request->query('from'),
-            'to' => $request->query('to'),
+            'from' => $request->query('from', DisplayTime::now()->startOfMonth()->format('Y-m-d')),
+            'to' => $request->query('to', DisplayTime::now()->format('Y-m-d')),
         ];
 
         $query = Sale::query()
@@ -32,6 +36,8 @@ class SaleController extends Controller
             ->when($filters['status'] !== 'all', fn ($q) => $q->where('status', $filters['status']))
             ->when($filters['method'], fn ($q, $method) => $q->where('payment_method', $method));
 
+        // Query string kosong (?from=) berarti "buka batasnya", bukan "pakai
+        // default lagi" — kalau tidak, filter tanggal tidak bisa dihapus.
         if ($filters['from']) {
             $query->where('sold_at', '>=', DisplayTime::startOfDayMs($filters['from']));
         }

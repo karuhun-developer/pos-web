@@ -44,10 +44,4 @@ return [
         'redirect' => env('GOOGLE_REDIRECT_URI', '/auth/google/callback'),
     ],
 
-    'paywuz' => [
-        'base_url' => env('PAYWUZ_BASE_URL', 'https://api.paywuz.id/v1'),
-        'key' => env('PAYWUZ_KEY'),
-        'webhook_secret' => env('PAYWUZ_WEBHOOK_SECRET'),
-    ],
-
 ];

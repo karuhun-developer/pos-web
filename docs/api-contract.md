@@ -368,35 +368,7 @@ bersifat lokal-FE; server menerimanya tapi mengabaikan untuk logika (kecuali ech
 
 ---
 
-## 7. Webhook
-
-### `POST /webhooks/paywuz` — Notifikasi pembayaran donasi
-
-**Bukan untuk FE POS Kacaw.** Endpoint ini dipanggil server Paywuz, bukan aplikasi
-kasir; didokumentasikan di sini karena ikut berada di bawah `api/v1` (di luar grup
-`web`, jadi tanpa CSRF & tanpa session).
-
-Header wajib:
-
-```
-X-Paywuz-Signature: sha256=<hmac_sha256(raw_body, PAYWUZ_WEBHOOK_SECRET)>
-X-Paywuz-Event: transaction.paid | transaction.settlement | transaction.expired | transaction.cancelled
-```
-
-Body (yang dipakai server): `data.orderId` (atau `orderId` di akar) dan
-`data.paymentMethod`.
-
-| HTTP | Kapan |
-|---|---|
-| `401` | tanda tangan tidak cocok / header kosong / secret belum diset |
-| `200` | tanda tangan sah — **selalu**, termasuk untuk order id tak dikenal atau event yang tidak ditangani (dicatat di log; membalas error hanya memicu kiriman ulang) |
-
-Idempoten: donasi ber-status `paid` tidak pernah diubah lagi, jadi kiriman ganda tidak
-menggeser `paid_at`. Detail: [`features/donations.md`](features/donations.md).
-
----
-
-## 8. RBAC (ringkas)
+## 7. RBAC (ringkas)
 
 Role per-toko (spatie teams=store): `owner`, `cashier`. Permission:
 `sync.push`, `sync.pull`, `catalog.manage`, `reports.view`, `cashier.session`,
@@ -410,7 +382,7 @@ memeriksanya. Lihat [`features/rbac-stores.md`](features/rbac-stores.md).
 
 ---
 
-## 9. Versioning
+## 8. Versioning
 
 - Prefix `api/v1`. Perubahan **non-breaking** (tambah field opsional/endpoint) tetap di
   v1. Perubahan **breaking** → `api/v2`, v1 didukung sampai window deprecation diumumkan.

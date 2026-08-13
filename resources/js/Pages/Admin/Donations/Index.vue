@@ -24,7 +24,6 @@ interface DonationRow {
   message: string | null
   channel: string
   status: string
-  payment_method: string | null
   created_at: string | null
   paid_at: string | null
 }
@@ -106,9 +105,9 @@ function changeStatus(row: DonationRow, next: string) {
           :value="formatRupiah(totals.amount)"
           hint="Tercatat + lunas, sesuai filter"
         />
-        <StatTile label="Sudah lunas" :value="formatRupiah(totals.paid)" hint="Terkonfirmasi Paywuz" />
+        <StatTile label="Sudah lunas" :value="formatRupiah(totals.paid)" hint="Sudah dicocokkan superadmin" />
         <StatTile label="Jumlah donasi" :value="formatNumber(totals.count)" hint="Semua status" />
-        <StatTile label="Menunggu bayar" :value="formatNumber(totals.pending)" hint="Belum selesai di Paywuz" />
+        <StatTile label="Belum dicek" :value="formatNumber(totals.pending)" hint="Belum dicocokkan" />
       </div>
 
       <MonthlySeriesPanel
@@ -193,7 +192,6 @@ function changeStatus(row: DonationRow, next: string) {
           </template>
           <template #cell-channel="{ row }">
             <span class="text-ink-muted">{{ channelLabel(row.channel) }}</span>
-            <p v-if="row.payment_method" class="text-xs text-ink-subtle">{{ row.payment_method }}</p>
           </template>
           <template #cell-amount="{ row }">
             <span class="font-medium tabular-nums">{{ formatRupiah(row.amount) }}</span>

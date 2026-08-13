@@ -7,10 +7,9 @@ return [
     | Donasi
     |--------------------------------------------------------------------------
     |
-    | POS Pro gratis dipakai; donasi murni sukarela. Tiga kanal disediakan dan
-    | masing-masing hidup sendiri-sendiri: kanal yang datanya belum diisi di
-    | .env otomatis tidak muncul di halaman /dukung — tidak ada tombol yang
-    | mengarah ke rekening kosong.
+    | POS Pro gratis dipakai; donasi murni sukarela. Yang ada di sini cuma aturan
+    | nominal; nomor rekening, QRIS, dan tautan Saweria diatur superadmin lewat
+    | halaman pengaturan donasi karena bisa berubah tanpa deploy.
     |
     */
 
@@ -31,9 +30,6 @@ return [
         'account_name' => env('DONATION_BANK_HOLDER'),
         'qris_url' => env('DONATION_QRIS_URL'),
     ],
-
-    /** Menit sebelum tagihan Paywuz kedaluwarsa. */
-    'checkout_expiry_minutes' => (int) env('DONATION_EXPIRY_MINUTES', 60),
 
     /** Tautan ke platform donasi pihak ketiga. */
     'external' => [

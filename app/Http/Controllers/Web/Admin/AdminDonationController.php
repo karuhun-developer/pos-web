@@ -41,7 +41,6 @@ class AdminDonationController extends Controller
             'message' => $donation->message,
             'channel' => $donation->channel,
             'status' => $donation->status,
-            'payment_method' => $donation->payment_method,
             'created_at' => $donation->created_at?->toIso8601String(),
             'paid_at' => $donation->paid_at?->toIso8601String(),
         ]);
@@ -76,7 +75,7 @@ class AdminDonationController extends Controller
         return Spreadsheet::download(
             'csv',
             'donasi-'.DisplayTime::now()->format('Ymd'),
-            ['kode', 'tanggal', 'nama', 'email', 'anonim', 'jumlah', 'kanal', 'status', 'metode', 'pesan'],
+            ['kode', 'tanggal', 'nama', 'email', 'anonim', 'jumlah', 'kanal', 'status', 'pesan'],
             (function () use ($query) {
                 foreach ($query->orderBy('created_at')->cursor() as $donation) {
                     yield [
@@ -88,7 +87,6 @@ class AdminDonationController extends Controller
                         $donation->amount,
                         $donation->channel,
                         $donation->status,
-                        $donation->payment_method,
                         $donation->message,
                     ];
                 }
@@ -138,7 +136,7 @@ class AdminDonationController extends Controller
             'count' => (clone $query)->count(),
             'amount' => (int) (clone $query)->whereIn('status', ['recorded', 'paid'])->sum('amount'),
             'paid' => (int) (clone $query)->where('status', 'paid')->sum('amount'),
-            'pending' => (clone $query)->where('status', 'pending')->count(),
+            'pending' => (clone $query)->where('status', 'recorded')->count(),
         ];
     }
 
