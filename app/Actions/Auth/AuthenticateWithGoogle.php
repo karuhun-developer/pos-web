@@ -3,7 +3,6 @@
 namespace App\Actions\Auth;
 
 use App\Contracts\GoogleTokenVerifier;
-use App\Models\User;
 use App\Support\AuthResponse;
 use Illuminate\Validation\ValidationException;
 
@@ -16,6 +15,7 @@ class AuthenticateWithGoogle
 {
     public function __construct(
         private readonly GoogleTokenVerifier $verifier,
+        private readonly UpsertGoogleUser $upsertUser,
         private readonly EnsureUserHasStore $ensureStore,
     ) {}
 
@@ -28,17 +28,7 @@ class AuthenticateWithGoogle
             ]);
         }
 
-        $user = User::query()->where('google_id', $claims['sub'])->first()
-            ?? User::query()->where('email', $claims['email'])->first()
-            ?? new User;
-
-        $user->fill([
-            'name' => $user->name ?: ($claims['name'] ?? $claims['email']),
-            'email' => $claims['email'],
-            'google_id' => $claims['sub'],
-            'avatar_url' => $claims['picture'] ?? $user->avatar_url,
-        ]);
-        $user->save();
+        $user = $this->upsertUser->handle($claims);
 
         $this->ensureStore->handle($user);
         $user->refresh();
