@@ -76,6 +76,9 @@ Format mengikuti [Keep a Changelog](https://keepachangelog.com/) & [SemVer](http
   dari tag git), keterangan singkat, dan tautan ke repo web & Android. Terbuka tanpa
   login — orang yang menimbang mau memakai POS Pro harus bisa melihat kodenya sebelum
   bikin akun. Tautannya ada di footer halaman publik dan dasar sidebar area toko.
+- **Unduh aplikasi Android** dari landing dan `/tentang` — mengarah ke halaman
+  `releases/latest` di GitHub, bukan berkas APK versi tertentu (tautan ke satu berkas
+  jadi basi tiap rilis dan diam-diam membagikan versi lama).
 - **Docs**: `docs/features/{web-ui,donations,import-export}.md`;
   `authentication-google.md` & `rbac-stores.md` diperbarui; `api-contract.md` §7
   non-goal "UI web admin"/"impor massal" dicabut dari PRD.

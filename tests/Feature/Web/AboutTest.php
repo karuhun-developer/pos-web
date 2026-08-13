@@ -15,5 +15,7 @@ it('shows the version and repository links to a guest', function () {
             ->component('About')
             ->where('app.version', '1.2.3')
             ->where('app.repository', 'https://github.com/karuhun-developer/pos-web')
-            ->where('app.android_repository', 'https://github.com/karuhun-developer/pos-android'));
+            ->where('app.android_repository', 'https://github.com/karuhun-developer/pos-android')
+            // Selalu "latest", tidak pernah menunjuk berkas APK versi tertentu.
+            ->where('app.android_download', 'https://github.com/karuhun-developer/pos-android/releases/latest'));
 });

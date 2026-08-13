@@ -20,6 +20,7 @@ class AboutController extends Controller
                 'version' => config('platform.version'),
                 'repository' => config('platform.repository'),
                 'android_repository' => config('platform.android_repository'),
+                'android_download' => config('platform.android_download'),
             ],
         ]);
     }

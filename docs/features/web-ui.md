@@ -77,8 +77,8 @@ Dikunci `tests/Feature/Web/PageSmokeTest.php`.
 
 | Halaman | Route | Isi |
 |---|---|---|
-| Landing | `home` | ringkasan produk + ajakan daftar |
-| Tentang | `about` | versi, keterangan singkat, tautan repo GitHub |
+| Landing | `home` | ringkasan produk, ajakan daftar, unduh APK Android |
+| Tentang | `about` | versi, keterangan singkat, unduh APK, tautan repo GitHub |
 | Donasi | `donate.*` | lihat [donations.md](donations.md) |
 
 `/tentang` sengaja terbuka tanpa login: orang yang menimbang mau memakai POS Pro harus
@@ -87,6 +87,10 @@ versinya dari `APP_VERSION` (pipeline deploy mengisinya dari tag git, jadi serve
 berjalan bisa menyebut versinya sendiri tanpa ganti kode), tautan repo konstan karena
 mengubahnya memang perubahan kode. Tautannya juga ada di footer `GuestLayout` dan di
 dasar sidebar `AppLayout`.
+
+Tombol unduh (landing dan `/tentang`) menunjuk `platform.android_download`, yaitu halaman
+**`releases/latest`** GitHub — bukan berkas APK versi tertentu. Tautan ke satu berkas jadi
+basi tiap rilis dan diam-diam membagikan versi lama; halaman rilis selalu benar sendiri.
 
 Logo GitHub ditulis sebagai SVG di `resources/js/Components/GithubIcon.vue` — `@lucide/vue`
 membuang ikon merek, jadi tidak ada yang bisa diimpor.

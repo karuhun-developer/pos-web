@@ -12,6 +12,7 @@ class LandingController extends Controller
     {
         return Inertia::render('Landing', [
             'googleEnabled' => filled(config('services.google.client_secret')),
+            'androidDownload' => config('platform.android_download'),
         ]);
     }
 }

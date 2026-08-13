@@ -21,6 +21,13 @@ return [
     'android_repository' => 'https://github.com/karuhun-developer/pos-android',
 
     /*
+     * Unduhan APK diarahkan ke halaman "latest release" GitHub, bukan ke berkas
+     * versi tertentu: tautan ke APK spesifik jadi basi tiap rilis dan diam-diam
+     * membagikan versi lama.
+     */
+    'android_download' => 'https://github.com/karuhun-developer/pos-android/releases/latest',
+
+    /*
     |--------------------------------------------------------------------------
     | Akun superadmin awal
     |--------------------------------------------------------------------------

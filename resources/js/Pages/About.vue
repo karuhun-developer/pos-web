@@ -1,12 +1,17 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3'
-import { ExternalLink, Heart } from '@lucide/vue'
+import { Download, ExternalLink, Heart } from '@lucide/vue'
 import GuestLayout from '@/Layouts/GuestLayout.vue'
 import GithubIcon from '@/Components/GithubIcon.vue'
 import Button from '@/Components/ui/Button.vue'
 
 const props = defineProps<{
-  app: { version: string; repository: string; android_repository: string }
+  app: {
+    version: string
+    repository: string
+    android_repository: string
+    android_download: string
+  }
 }>()
 
 const REPOS = [
@@ -53,6 +58,23 @@ const REPOS = [
 
       <p class="mt-3 text-sm leading-relaxed text-ink-muted">
         Gratis 100% — tidak ada fitur yang dikunci di baliknya.
+      </p>
+
+      <!-- Halaman rilis, bukan berkas APK versi tertentu: tautan ke satu berkas
+           jadi basi tiap rilis dan diam-diam membagikan versi lama. -->
+      <a
+        :href="app.android_download"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="mt-6 inline-block"
+      >
+        <Button>
+          <Download class="size-4" />
+          Unduh aplikasi Android
+        </Button>
+      </a>
+      <p class="mt-2 text-xs text-ink-subtle">
+        Mengarah ke rilis terbaru di GitHub — APK-nya ada di bagian <em>Assets</em>.
       </p>
 
       <h2 class="mt-10 text-sm font-semibold text-ink">Kode sumber</h2>

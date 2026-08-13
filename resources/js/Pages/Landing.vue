@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { Link, usePage } from '@inertiajs/vue3'
 import {
   BarChart3,
+  Download,
   FileSpreadsheet,
   Heart,
   RefreshCw,
@@ -13,7 +14,7 @@ import GuestLayout from '@/Layouts/GuestLayout.vue'
 import Button from '@/Components/ui/Button.vue'
 import type { SharedProps } from '@/types'
 
-defineProps<{ googleEnabled: boolean }>()
+defineProps<{ googleEnabled: boolean; androidDownload: string }>()
 
 const page = usePage<SharedProps>()
 const loggedIn = computed(() => page.props.auth.user !== null)
@@ -85,8 +86,17 @@ const FEATURES = [
         <Link :href="loggedIn ? route('dashboard') : route('register')">
           <Button>{{ loggedIn ? 'Buka Dashboard' : 'Mulai gratis' }}</Button>
         </Link>
-        <Link :href="route('donate.index')">
+        <!-- Rilis terbaru di GitHub, bukan berkas APK versi tertentu: tautan
+             ke satu berkas jadi basi tiap rilis dan diam-diam membagikan
+             versi lama. -->
+        <a :href="androidDownload" target="_blank" rel="noopener noreferrer">
           <Button variant="outline">
+            <Download class="size-4" />
+            Unduh aplikasi Android
+          </Button>
+        </a>
+        <Link :href="route('donate.index')">
+          <Button variant="ghost">
             <Heart class="size-4" />
             Dukung proyek ini
           </Button>
