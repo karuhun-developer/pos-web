@@ -1,12 +1,16 @@
-# POS Pro — Backend API
+# POS Pro — backend & panel web aplikasi kasir POS Kacaw (Laravel)
 
-Backend cloud untuk **POS Kacaw** (aplikasi kasir offline-first Android/web).
-POS Pro menaikkan app dari single-device jadi **multi-device + backup cloud +
-login online** lewat sinkronisasi dua arah berbasis outbox.
+**Aplikasi kasir (POS / point of sale) gratis dan open source untuk warung &
+UMKM.** POS Pro adalah backend cloud sekaligus **panel web** untuk
+[POS Kacaw](https://github.com/karuhun-developer/pos-android), aplikasi kasir
+Android yang tetap jalan **tanpa internet**. Ia menaikkan app dari single-device
+jadi **multi-device + backup cloud + login online** lewat sinkronisasi dua arah
+berbasis outbox — lalu menambah yang butuh layar besar: kelola produk, laporan
+penjualan, impor/ekspor massal, hak akses kasir, dan panel superadmin.
 
-- **Stack:** Laravel 13 · PHP 8.4 · MySQL · Sanctum 4 (bearer token) ·
-  spatie/laravel-permission 6 (RBAC per-toko/team) · spatie/laravel-route-attributes ·
-  Scramble (OpenAPI) · Pest 4 · Pint.
+- **Stack:** Laravel 13 · PHP 8.4 · MySQL · Inertia 2 + Vue 3 + Tailwind v4 ·
+  Sanctum 4 (bearer token) · spatie/laravel-permission 6 (RBAC per-toko/team) ·
+  spatie/laravel-route-attributes · Scramble (OpenAPI) · Pest 4 · Pint.
 - **Klien:** [POS Kacaw](https://github.com/karuhun-developer/pos-android) (Vue 3 +
   Capacitor + SQLite). Kontrak sinkronisasi = sumber kebenaran ada di FE
   (`src/services/sync/types.ts`), di-mirror ke `docs/api-contract.md`.
@@ -47,6 +51,19 @@ sale_items, cashflow_categories, cashflow_entries`.
 Kontrak lengkap + skema payload per-entity: **[`docs/api-contract.md`](docs/api-contract.md)**.
 OpenAPI hidup (Scramble): `/docs/api` (UI) & `/docs/api.json`.
 
+## Panel web
+
+| Area | Route | Isi |
+|---|---|---|
+| Publik | `/` , `/dukung` | landing POS Kacaw (unduh APK) & halaman donasi |
+| Toko | `/dashboard` … `/pengaturan-toko` | produk, kategori, transaksi, arus kas, sesi kasir, **laporan + chart**, impor/ekspor CSV/XLSX |
+| Platform | `/admin` | superadmin: semua toko, pengguna, donasi, log sync |
+
+Semua tulisan dari web lewat `WriteEntity` (pembungkus jalur sync yang sama
+dengan `POST /sync/push`), jadi perubahan dari browser **ikut ter-pull perangkat
+Android** dan penghapusan jadi tombstone, bukan hard delete.
+Detailnya: [`docs/features/web-ui.md`](docs/features/web-ui.md).
+
 ## Setup
 
 ```bash
@@ -69,12 +86,13 @@ dengan `php artisan pos:superadmin kamu@email.com`.
 
 | Var | Fungsi |
 |---|---|
-| `GOOGLE_CLIENT_ID` | Client ID Google (tipe **Web application**) buat verifikasi ID token dari app. **Cukup client ID** — tanpa client secret / redirect (kita verifikasi ID token, bukan OAuth redirect ala Socialite). |
+| `GOOGLE_CLIENT_ID` | Client ID Google (tipe **Web application**) buat verifikasi ID token dari app Android. |
+| `GOOGLE_CLIENT_SECRET` | Hanya untuk **login Google di web** (OAuth redirect via Socialite). Kosong = tombol Google di halaman masuk disembunyikan; jalur Android tetap jalan tanpa ini. |
+| `GOOGLE_REDIRECT_URI` | Default `${APP_URL}/auth/google/callback` — daftarkan persis ini sebagai *Authorized redirect URI* di Google Cloud Console. |
 
 ### Akun demo (dari seeder)
 
-- Owner: `owner@example.com` / `password`
-- Kasir: `cashier@example.com` / `password`
+- Owner: `owner@example.com` / `password` (langsung punya toko pertama)
 
 ## Testing
 
@@ -90,5 +108,5 @@ scope store), RBAC (kasir ditolak `catalog.manage`).
 ## Dokumentasi
 
 `docs/` — `PRD.md`, `architecture.md`, `api-contract.md`, `CHANGELOG.md`, dan
-`features/` (authentication-google, rbac-stores, sync-endpoints, tenancy-multistore,
-media-storage).
+`features/` (web-ui, donations, import-export, authentication-google, rbac-stores,
+sync-endpoints, tenancy-multistore, media-storage).
