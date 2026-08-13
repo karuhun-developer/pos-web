@@ -16,6 +16,13 @@ export function formatNumber(value: number | null | undefined): string {
   return new Intl.NumberFormat('id-ID').format(value ?? 0)
 }
 
+/** "Rp 26.000" / "26.000" / "26000" → 26000. Kebalikan mask di `MoneyInput`. */
+export function parseRupiah(input: string): number {
+  const digits = input.replace(/\D/g, '')
+
+  return digits ? Number.parseInt(digits, 10) : 0
+}
+
 /** Persen ringkas untuk delta KPI (mis. +12,4%). */
 export function formatDelta(value: number | null | undefined): string {
   if (value === null || value === undefined || !Number.isFinite(value)) return '—'

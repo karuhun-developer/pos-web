@@ -61,6 +61,9 @@ Format mengikuti [Keep a Changelog](https://keepachangelog.com/) & [SemVer](http
   rekening, tautan Saweria, catatan) dan disimpan di tabel `settings` key/value —
   bukan `.env`, karena nomor rekening berubah tanpa alasan teknis dan tidak layak
   menunggu deploy. Lihat `docs/features/donations.md`.
+- **Mask ribuan untuk input uang** (`MoneyInput.vue`, seperti di POS Kacaw): harga jual,
+  harga modal, entri kas, dan nominal donasi. `type="number"` ditinggalkan karena melarang
+  pemisah ribuan; nilai yang dikirim tetap integer rupiah.
 - **Pindai barcode di web**: tombol kamera di form produk (mengisi barcode sekaligus
   simbologinya) dan di kotak cari daftar produk. `BarcodeDetector` bawaan browser kalau
   ada, `@zxing/browser` sebagai cadangan lewat `import()` dinamis supaya dekodernya tidak

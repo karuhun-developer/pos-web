@@ -7,6 +7,7 @@ import Button from '@/Components/ui/Button.vue'
 import Card from '@/Components/ui/Card.vue'
 import FormField from '@/Components/ui/FormField.vue'
 import Input from '@/Components/ui/Input.vue'
+import MoneyInput from '@/Components/ui/MoneyInput.vue'
 import PaymentTargets from '@/Components/donate/PaymentTargets.vue'
 import { channelLabel } from '@/lib/donation'
 import { cn, formatNumber, formatRupiah } from '@/lib/utils'
@@ -120,11 +121,7 @@ const formatted = computed(() => formatRupiah(form.amount))
 
             <div v-if="custom" class="mt-3">
               <FormField label="Nominal" required :error="form.errors.amount">
-                <Input
-                  v-model.number="form.amount"
-                  type="number"
-                  :invalid="!!form.errors.amount"
-                />
+                <MoneyInput v-model="form.amount" :invalid="!!form.errors.amount" />
               </FormField>
             </div>
             <p v-else-if="form.errors.amount" class="mt-2 text-xs text-danger">

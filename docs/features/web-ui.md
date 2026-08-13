@@ -107,6 +107,14 @@ membuang ikon merek, jadi tidak ada yang bisa diimpor.
 | Pengaturan toko | `store.edit` | ganti nama, daftar anggota |
 | Ganti toko aktif | `stores.switch` | set `current_store_id` (validasi keanggotaan) |
 
+## Input uang
+Semua nominal rupiah memakai `resources/js/Components/ui/MoneyInput.vue` (harga jual,
+harga modal, entri kas, nominal donasi) — bermask ribuan seperti POS Kacaw.
+`<input type="number">` sengaja tidak dipakai: ia melarang pemisah ribuan, jadi "150000"
+harus dihitung nolnya sendiri oleh mata — sumber salah harga yang paling gampang. Yang
+bermask cuma tampilannya; nilai yang dikirim tetap **integer rupiah**
+(`parseRupiah()` di `resources/js/lib/utils.ts`).
+
 ## Pindai barcode (web)
 `resources/js/Components/BarcodeScanner.vue` + `resources/js/lib/barcode.ts`. Dipakai di
 form produk (mengisi barcode **dan** simbologinya — dekodernya sudah tahu formatnya) dan

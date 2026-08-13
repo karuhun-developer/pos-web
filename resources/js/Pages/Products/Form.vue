@@ -8,6 +8,7 @@ import Button from '@/Components/ui/Button.vue'
 import Card from '@/Components/ui/Card.vue'
 import FormField from '@/Components/ui/FormField.vue'
 import Input from '@/Components/ui/Input.vue'
+import MoneyInput from '@/Components/ui/MoneyInput.vue'
 import { isScanSupported, toSymbology } from '@/lib/barcode'
 import type { Category, Product } from '@/types'
 
@@ -149,11 +150,11 @@ function submit() {
         <Card title="Harga & stok">
           <div class="grid gap-4 sm:grid-cols-2">
             <FormField label="Harga jual" required :error="form.errors.price" hint="Rupiah, tanpa desimal.">
-              <Input v-model.number="form.price" type="number" min="0" :invalid="!!form.errors.price" />
+              <MoneyInput v-model="form.price" :invalid="!!form.errors.price" />
             </FormField>
 
             <FormField label="Harga modal" :error="form.errors.cost" hint="Dipakai menghitung margin di laporan.">
-              <Input v-model.number="form.cost" type="number" min="0" :invalid="!!form.errors.cost" />
+              <MoneyInput v-model="form.cost" :invalid="!!form.errors.cost" />
             </FormField>
 
             <label class="flex items-center gap-3 rounded-xl border border-border p-3 sm:col-span-2">

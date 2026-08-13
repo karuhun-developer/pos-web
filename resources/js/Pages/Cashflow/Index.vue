@@ -10,6 +10,7 @@ import EmptyState from '@/Components/ui/EmptyState.vue'
 import FormField from '@/Components/ui/FormField.vue'
 import Input from '@/Components/ui/Input.vue'
 import Modal from '@/Components/ui/Modal.vue'
+import MoneyInput from '@/Components/ui/MoneyInput.vue'
 import Pagination from '@/Components/ui/Pagination.vue'
 import StatTile from '@/Components/StatTile.vue'
 import CashflowCategoryManager from '@/Components/CashflowCategoryManager.vue'
@@ -249,7 +250,7 @@ function destroy() {
         </FormField>
 
         <FormField label="Nominal" required :error="form.errors.amount">
-          <Input v-model.number="form.amount" type="number" min="1" :invalid="!!form.errors.amount" />
+          <MoneyInput v-model="form.amount" :invalid="!!form.errors.amount" />
         </FormField>
 
         <FormField label="Tanggal" required :error="form.errors.occurred_on">
