@@ -77,7 +77,7 @@ Dikunci `tests/Feature/Web/PageSmokeTest.php`.
 
 | Halaman | Route | Isi |
 |---|---|---|
-| Landing | `home` | promosi POS Kacaw: unduh APK, fitur, "dua aplikasi satu data", kode sumber |
+| Landing | `home` | promosi POS Kacaw: unduh APK, dukung, fitur, "dua aplikasi satu data" + reponya |
 | Donasi | `donate.*` | lihat [donations.md](donations.md) |
 
 **Yang dipromosikan ke publik adalah POS Kacaw**, aplikasi Androidnya — POS Pro cuma
@@ -86,9 +86,31 @@ nama panel webnya dan baru muncul setelah orangnya masuk. Karena itu header/foot
 `/tentang` yang dulu terpisah **dilebur ke landing**: satu halaman publik lebih gampang
 dijaga daripada dua halaman yang isinya saling menyalin.
 
-Judul tab dirakit di `resources/js/app.ts`: `title ? "${title} · POS Kacaw" : "POS Kacaw"`.
-Halaman mengirim judul spesifiknya saja — mengirim nama produk lagi bikin
-"POS Pro · POS Pro" seperti sebelumnya.
+### SEO: metanya dirender server, bukan Vue
+Panel ini Inertia **tanpa SSR**, jadi `<Head>` milik Inertia baru mengisi `<title>` dan
+`<meta name="description">` setelah bundle JS jalan. Perayap yang tidak menjalankan JS —
+dan hampir semua scraper pratinjau tautan (WhatsApp, Telegram, Twitter) — cuma membaca
+HTML pertama, yang isinya `<div id="app">` kosong. Maka meta-nya dipindah ke server:
+
+- **`app/Support/PageSeo.php`** memetakan **nama route → judul, deskripsi, boleh diindeks**.
+  Route yang tidak terdaftar default-nya `index => false`, jadi seluruh halaman di balik
+  login (termasuk halaman baru) otomatis `noindex` tanpa harus diingat satu-satu.
+- **`resources/views/app.blade.php`** mencetak `<title>`, deskripsi, `canonical`, `robots`,
+  dan tag Open Graph/Twitter langsung di HTML pertama.
+- Judul & deskripsi diberi atribut `inertia` (`inertia="description"` = `head-key` di
+  `GuestLayout.vue`), jadi waktu halaman berpindah di klien head manager Inertia
+  **mengganti** tag itu, bukan menggandakannya. Tag OG sengaja tanpa `inertia`: yang
+  membacanya cuma scraper, dan scraper tidak pernah pindah halaman.
+- `PageSeo` juga dibagikan sebagai prop `seo` (lihat `HandleInertiaRequests`), dan
+  `GuestLayout` memakai prop itu — halaman publik **tidak** lagi menulis judulnya sendiri,
+  jadi yang dibaca Google tidak bisa beda dengan yang dibaca orang.
+
+Judul tab dirakit dua kali dengan format yang sama: `App\Support\PageSeo::title()` untuk
+HTML pertama dan `resources/js/app.ts` untuk perpindahan halaman
+(`title ? "${title} · POS Kacaw" : "POS Kacaw"`). Halaman mengirim judul spesifiknya saja —
+mengirim nama produk lagi bikin "POS Pro · POS Pro" seperti sebelumnya.
+Dikunci `tests/Feature/Web/PageSeoTest.php`, yang memeriksa **HTML mentah**, bukan prop
+Inertia — kalau meta-nya balik ke sisi Vue, test itu yang jatuh duluan.
 
 ### Nomor versi & tombol unduh
 `app/Actions/Platform/FetchAndroidRelease.php` membaca rilis terbaru dari GitHub API

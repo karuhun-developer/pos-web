@@ -6,6 +6,7 @@ import {
   BarChart3,
   Download,
   FileSpreadsheet,
+  Heart,
   Monitor,
   RefreshCw,
   ShieldCheck,
@@ -85,26 +86,33 @@ const FEATURES = [
   },
 ]
 
-const REPOS = [
+/*
+ * Repo digandeng ke aplikasinya masing-masing, bukan dibikin seksi sendiri:
+ * daftar repo terpisah memaksa orang mencocokkan sendiri mana repo punya mana
+ * aplikasi, padahal keterangannya sudah ada di kartu ini.
+ */
+const APPS = [
   {
+    icon: Smartphone,
+    title: 'POS Kacaw · Android',
+    body: 'Kasir, keranjang, scan barcode, cetak struk, sesi kasir, dan arus kas. Semua tersimpan di HP dan tetap bisa dipakai offline.',
+    stack: 'Vue + Capacitor · SQLite di HP',
     url: props.repos.android,
-    name: 'karuhun-developer/pos-android',
-    body: 'Aplikasi kasirnya — Vue + Capacitor, database SQLite di HP.',
+    repo: 'karuhun-developer/pos-android',
   },
   {
+    icon: Monitor,
+    title: 'POS Pro · panel web',
+    body: 'Backend sinkronisasinya, sekaligus tempat kelola produk, undang kasir, baca laporan mendalam, dan impor/ekspor massal.',
+    stack: 'Laravel · Inertia + Vue',
     url: props.repos.web,
-    name: 'karuhun-developer/pos-web',
-    body: 'POS Pro: backend sinkronisasi, panel toko, dan panel superadmin — Laravel.',
+    repo: 'karuhun-developer/pos-web',
   },
 ]
 </script>
 
 <template>
-  <GuestLayout
-    title="Aplikasi kasir Android yang jalan tanpa internet"
-    description="POS Kacaw: aplikasi kasir Android gratis yang tetap jalan offline, lalu sinkron
-                 sendiri ke panel web untuk kelola produk dan baca laporan. Gratis 100%, open source."
-  >
+  <GuestLayout>
     <template #actions>
       <Link v-if="loggedIn" :href="route('dashboard')">
         <Button size="sm">Dashboard</Button>
@@ -141,6 +149,12 @@ const REPOS = [
       </p>
 
       <div class="mt-8 flex flex-wrap items-center justify-center gap-2.5">
+        <Link :href="route('donate.index')">
+          <Button>
+            <Heart class="size-4" />
+            Dukung
+          </Button>
+        </Link>
         <a :href="downloadUrl" target="_blank" rel="noopener noreferrer">
           <Button>
             <Download class="size-4" />
@@ -173,57 +187,31 @@ const REPOS = [
       </div>
     </section>
 
-    <!-- Dua aplikasi, satu data (isi halaman "tentang" yang lama, dilebur ke sini) -->
+    <!-- Dua aplikasi + reponya (isi halaman "tentang" yang lama, dilebur ke sini) -->
     <section class="mx-auto w-full max-w-5xl px-4 pt-20 sm:px-6">
       <h2 class="text-2xl font-semibold tracking-tight text-ink">Dua aplikasi, satu data.</h2>
-      <p class="mt-2 max-w-xl text-sm text-ink-muted">
+      <p class="mt-2 max-w-2xl text-sm text-ink-muted">
         Yang dipakai jualan tiap hari ada di HP. Yang butuh layar besar — laporan, impor massal,
-        hak akses — ada di web. Keduanya menyimpan data yang sama.
+        hak akses — ada di web. Keduanya menyimpan data yang sama, dan dua-duanya open source:
+        boleh dibaca, dipasang sendiri di server kamu, atau dikirimi perbaikan.
       </p>
 
       <div class="mt-6 grid gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-2">
-        <div class="bg-surface p-6">
-          <Smartphone class="size-4 text-ink" />
-          <h3 class="mt-4 text-sm font-medium text-ink">POS Kacaw · Android</h3>
-          <p class="mt-1.5 text-sm leading-relaxed text-ink-muted">
-            Kasir, keranjang, scan barcode, cetak struk, sesi kasir, dan arus kas. Semua
-            tersimpan di HP dan tetap bisa dipakai offline.
-          </p>
+        <div v-for="app in APPS" :key="app.repo" class="flex flex-col bg-surface p-6">
+          <component :is="app.icon" class="size-4 text-ink" />
+          <h3 class="mt-4 text-sm font-medium text-ink">{{ app.title }}</h3>
+          <p class="mt-1.5 text-sm leading-relaxed text-ink-muted">{{ app.body }}</p>
+          <p class="mt-3 font-mono text-xs text-ink-subtle">{{ app.stack }}</p>
+          <a
+            :href="app.url"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="mt-5 flex items-center gap-2 font-mono text-xs text-ink-muted transition hover:text-ink"
+          >
+            <GithubIcon class="size-3.5 shrink-0" />
+            <span class="truncate underline underline-offset-4">{{ app.repo }}</span>
+          </a>
         </div>
-        <div class="bg-surface p-6">
-          <Monitor class="size-4 text-ink" />
-          <h3 class="mt-4 text-sm font-medium text-ink">POS Pro · panel web</h3>
-          <p class="mt-1.5 text-sm leading-relaxed text-ink-muted">
-            Backend sinkronisasinya, sekaligus tempat kelola produk, undang kasir, baca laporan
-            mendalam, dan impor/ekspor massal.
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Kode sumber -->
-    <section class="mx-auto w-full max-w-5xl px-4 pt-20 sm:px-6">
-      <h2 class="text-2xl font-semibold tracking-tight text-ink">Kodenya kebuka.</h2>
-      <p class="mt-2 max-w-xl text-sm text-ink-muted">
-        Boleh dibaca, dipasang sendiri di server kamu, atau dikirimi perbaikan. Nemu bug? Buka
-        issue — itu jalur tercepat sampai ke yang ngoding.
-      </p>
-
-      <div class="mt-6 grid gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-2">
-        <a
-          v-for="repo in REPOS"
-          :key="repo.url"
-          :href="repo.url"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="flex items-start gap-3 bg-surface p-6 transition hover:bg-surface-sunken"
-        >
-          <GithubIcon class="mt-0.5 size-4 shrink-0 text-ink" />
-          <span class="min-w-0 flex-1">
-            <span class="block truncate font-mono text-sm text-ink">{{ repo.name }}</span>
-            <span class="mt-1.5 block text-sm leading-relaxed text-ink-muted">{{ repo.body }}</span>
-          </span>
-        </a>
       </div>
     </section>
 

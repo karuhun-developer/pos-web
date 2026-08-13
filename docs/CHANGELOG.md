@@ -76,8 +76,18 @@ Format mengikuti [Keep a Changelog](https://keepachangelog.com/) & [SemVer](http
   adalah aplikasi Androidnya; POS Pro cuma nama panel webnya dan baru muncul setelah
   masuk. Halaman `/tentang` yang terpisah **dilebur ke landing** — dua halaman publik
   yang isinya saling menyalin cuma menggandakan tempat copy-nya basi. Judul tab dirakit
-  sekali di `resources/js/app.ts` (`"{judul} · POS Kacaw"`) supaya tidak lagi berbunyi
-  "POS Pro · POS Pro", dan halaman publik mengirim `description` untuk SEO.
+  dengan format `"{judul} · POS Kacaw"` supaya tidak lagi berbunyi "POS Pro · POS Pro".
+- **SEO dirender di server** (`app/Support/PageSeo.php` + `resources/views/app.blade.php`):
+  panel ini Inertia **tanpa SSR**, jadi `<Head>` Vue baru mengisi judul & deskripsi
+  setelah JS jalan — perayap dan scraper pratinjau tautan cuma melihat `<div id="app">`
+  kosong. Judul, deskripsi, `canonical`, `robots`, dan tag Open Graph/Twitter sekarang
+  ada di HTML pertama, dipetakan dari **nama route** (route tak terdaftar = `noindex`,
+  jadi halaman di balik login tertutup by default). Teks yang sama dibagikan sebagai
+  prop `seo` supaya sisi klien ikut berubah saat pindah halaman tanpa menggandakan tag
+  (atribut `inertia` = `head-key`). Dikunci `tests/Feature/Web/PageSeoTest.php` yang
+  memeriksa HTML mentah.
+- **Tombol "Dukung" di hero landing** — sejajar tombol unduh (ikon hati), bukan cuma
+  satu kalimat di penutup halaman.
 - **Nomor versi & tombol unduh dari rilis GitHub sungguhan**
   (`app/Actions/Platform/FetchAndroidRelease.php`): tag, tautan APK, ukuran berkas, dan
   tanggal rilis dibaca dari `repos/karuhun-developer/pos-android/releases/latest`,
@@ -97,7 +107,7 @@ Format mengikuti [Keep a Changelog](https://keepachangelog.com/) & [SemVer](http
 - **Docs**: `docs/features/{web-ui,donations,import-export}.md`;
   `authentication-google.md` & `rbac-stores.md` diperbarui; `api-contract.md` §7
   non-goal "UI web admin"/"impor massal" dicabut dari PRD.
-- **Test**: `tests/Feature/Web/` — 57 kasus (kepemilikan, sync dari web, panel admin,
+- **Test**: `tests/Feature/Web/` — 61 kasus (kepemilikan, sync dari web, panel admin,
   auth web + Google, impor/ekspor, donasi + moderasi + pengaturannya, laporan cetak +
   gating `reports.view`, rilis Android di landing, smoke semua halaman).
 

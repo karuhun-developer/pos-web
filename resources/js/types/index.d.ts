@@ -165,5 +165,18 @@ export interface SharedProps {
   /** Hanya terisi untuk superadmin — lihat HandleInertiaRequests. */
   platform: { pending_donations: number } | null
   app: { name: string }
+  /**
+   * Meta halaman dari server (App\Support\PageSeo). Sumbernya di PHP karena
+   * web ini bukan SSR — app.blade.php yang mencetaknya untuk perayap, dan
+   * GuestLayout memakai prop ini supaya judulnya ikut berubah saat pindah
+   * halaman di klien.
+   */
+  seo: {
+    title: string | null
+    title_full: string
+    description: string
+    index: boolean
+    url: string
+  }
   [key: string]: unknown
 }

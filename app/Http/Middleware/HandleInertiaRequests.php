@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Models\Donation;
 use App\Models\User;
+use App\Support\PageSeo;
 use App\Support\StoreContext;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -78,6 +79,14 @@ class HandleInertiaRequests extends Middleware
                 'success' => fn () => $request->session()->get('success'),
                 'error' => fn () => $request->session()->get('error'),
             ],
+            /*
+             * Judul & deskripsi halaman berasal dari server (lihat PageSeo) —
+             * app.blade.php sudah mencetaknya untuk perayap, dan prop ini yang
+             * dipakai GuestLayout waktu halaman berpindah di klien. Satu sumber
+             * teks, jadi yang dibaca Google tidak bisa beda dengan yang dibaca
+             * orang.
+             */
+            'seo' => fn () => PageSeo::for($request),
         ];
     }
 

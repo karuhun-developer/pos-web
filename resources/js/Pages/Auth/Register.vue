@@ -17,7 +17,7 @@ function submit() {
 </script>
 
 <template>
-  <GuestLayout title="Daftar">
+  <GuestLayout>
     <div class="flex flex-1 items-center justify-center px-4 py-10">
       <div class="w-full max-w-sm">
         <h1 class="text-xl font-semibold text-ink">Buat akun</h1>

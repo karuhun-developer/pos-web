@@ -26,7 +26,7 @@ function copy(value: string) {
 </script>
 
 <template>
-  <GuestLayout title="Terima kasih">
+  <GuestLayout>
     <div class="mx-auto w-full max-w-lg space-y-6 px-4 py-12">
       <Card>
         <div class="text-center">

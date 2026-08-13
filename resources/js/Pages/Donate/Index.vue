@@ -56,7 +56,7 @@ const formatted = computed(() => formatRupiah(form.amount))
 </script>
 
 <template>
-  <GuestLayout title="Dukung POS Kacaw">
+  <GuestLayout>
     <template #actions>
       <Link v-if="page.props.auth.user" :href="route('dashboard')">
         <Button variant="outline" size="sm">Dashboard</Button>

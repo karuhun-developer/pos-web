@@ -1,21 +1,29 @@
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3'
+import { computed } from 'vue'
+import { Head, Link, usePage } from '@inertiajs/vue3'
 import Logo from '@/Components/Logo.vue'
 import GithubIcon from '@/Components/GithubIcon.vue'
 import ThemeToggle from '@/Components/ThemeToggle.vue'
 import FlashToast from '@/Components/FlashToast.vue'
+import type { SharedProps } from '@/types'
 
 /*
  * Merek yang dipajang ke publik adalah POS Kacaw — aplikasi Androidnya yang
  * dipromosikan. POS Pro cuma nama panel webnya, jadi namanya baru muncul
  * setelah orangnya masuk (lihat AppLayout).
+ *
+ * Judul & deskripsinya TIDAK ditulis di komponen ini: web ini bukan SSR, jadi
+ * apa pun yang dirender Vue tidak pernah dilihat perayap. Teksnya datang dari
+ * App\Support\PageSeo — sudah dicetak app.blade.php di HTML pertama, dan
+ * <Head> di bawah cuma menyegarkannya waktu halaman berpindah di klien.
  */
-defineProps<{ title: string; description?: string }>()
+const page = usePage<SharedProps>()
+const seo = computed(() => page.props.seo)
 </script>
 
 <template>
-  <Head :title="title">
-    <meta v-if="description" head-key="description" name="description" :content="description" />
+  <Head :title="seo.title ?? ''">
+    <meta head-key="description" name="description" :content="seo.description" />
   </Head>
 
   <div class="flex min-h-screen flex-col bg-surface">
