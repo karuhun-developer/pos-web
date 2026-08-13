@@ -2,8 +2,104 @@
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
+@source '../js/**/*.vue';
+@source '../js/**/*.ts';
 
-@theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+/* Dark mode dikendalikan class `.dark` di <html>, bukan media query — supaya
+   toggle manual di UI menang atas setelan OS. Lihat resources/js/lib/theme.ts. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * Token warna. Nilai surface & teks diambil dari palet data-viz tervalidasi
+ * (surface terang #fcfcfb / gelap #1a1a19) supaya chart dan chrome di
+ * sekitarnya berada di ruang warna yang sama — kontras seri sudah diuji
+ * terhadap dua surface ini. Jangan ganti surface tanpa menjalankan ulang
+ * validator palet.
+ */
+:root {
+  --color-surface: #fcfcfb;
+  --color-surface-raised: #ffffff;
+  --color-surface-sunken: #f4f3f0;
+  --color-border: #e3e1dc;
+  --color-border-strong: #cbc9c2;
+  --color-ink: #0b0b0b;
+  --color-ink-muted: #52514e;
+  --color-ink-subtle: #77756f;
+  --color-brand: #2a78d6;
+  --color-brand-ink: #ffffff;
+  --color-brand-soft: #e8f0fd;
+  --color-success: #1baf7a;
+  --color-warning: #eda100;
+  --color-danger: #e34948;
+  --color-danger-soft: #fdecec;
+}
+
+.dark {
+  --color-surface: #1a1a19;
+  --color-surface-raised: #232322;
+  --color-surface-sunken: #131312;
+  --color-border: #34342f;
+  --color-border-strong: #4a4a43;
+  --color-ink: #ffffff;
+  --color-ink-muted: #c3c2b7;
+  --color-ink-subtle: #92918a;
+  --color-brand: #3987e5;
+  --color-brand-ink: #0b0b0b;
+  --color-brand-soft: #17263a;
+  --color-success: #199e70;
+  --color-warning: #c98500;
+  --color-danger: #e66767;
+  --color-danger-soft: #3a1e1e;
+}
+
+@theme inline {
+  --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+
+  --color-surface: var(--color-surface);
+  --color-surface-raised: var(--color-surface-raised);
+  --color-surface-sunken: var(--color-surface-sunken);
+  --color-border: var(--color-border);
+  --color-border-strong: var(--color-border-strong);
+  --color-ink: var(--color-ink);
+  --color-ink-muted: var(--color-ink-muted);
+  --color-ink-subtle: var(--color-ink-subtle);
+  --color-brand: var(--color-brand);
+  --color-brand-ink: var(--color-brand-ink);
+  --color-brand-soft: var(--color-brand-soft);
+  --color-success: var(--color-success);
+  --color-warning: var(--color-warning);
+  --color-danger: var(--color-danger);
+  --color-danger-soft: var(--color-danger-soft);
+}
+
+@layer base {
+  html {
+    color-scheme: light;
+  }
+
+  html.dark {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-surface text-ink antialiased;
+  }
+
+  *,
+  ::after,
+  ::before {
+    border-color: var(--color-border);
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-brand;
+  }
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }

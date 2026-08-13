@@ -69,6 +69,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Display Timezone
+    |--------------------------------------------------------------------------
+    |
+    | Data disimpan sebagai epoch ms (UTC), tapi laporan harus dipotong per
+    | "hari" menurut jam toko. Zona ini dipakai saat mengelompokkan tanggal
+    | dan memformat waktu — app.timezone tetap UTC supaya penyimpanan netral.
+    |
+    */
+
+    'timezone_display' => env('APP_DISPLAY_TIMEZONE', 'Asia/Jakarta'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Locale Configuration
     |--------------------------------------------------------------------------
     |

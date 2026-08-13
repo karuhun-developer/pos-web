@@ -1,0 +1,25 @@
+{
+    "compilerOptions": {
+        "target": "ESNext",
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "strict": true,
+        "jsx": "preserve",
+        "noEmit": true,
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        "skipLibCheck": true,
+        "isolatedModules": true,
+        "resolveJsonModule": true,
+        "allowJs": true,
+        "types": ["vite/client"],
+        "paths": {
+            "@/*": ["./resources/js/*"],
+            // Sejalan dengan alias di vite.config.js: Ziggy datang dari paket
+            // composer, bukan npm.
+            "ziggy-js": ["./vendor/tightenco/ziggy/src/js/index.d.ts"]
+        }
+    },
+    "include": ["resources/js/**/*.ts", "resources/js/**/*.d.ts", "resources/js/**/*.vue"],
+    "exclude": ["node_modules", "public"]
+}
