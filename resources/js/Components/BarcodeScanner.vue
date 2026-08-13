@@ -93,7 +93,7 @@ onBeforeUnmount(stop)
 </script>
 
 <template>
-  <Modal v-model:open="open" title="Pindai barcode">
+  <Modal v-model:open="open" title="Scan barcode">
     <div v-if="error" class="flex flex-col items-center gap-3 py-6 text-center">
       <CameraOff class="size-8 text-ink-subtle" />
       <p class="text-sm text-ink-muted">{{ error }}</p>

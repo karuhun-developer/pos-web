@@ -95,8 +95,8 @@ function destroy() {
           v-if="scanSupported"
           variant="outline"
           size="icon"
-          aria-label="Cari lewat pindaian barcode"
-          title="Pindai barcode"
+          aria-label="Cari lewat scan barcode"
+          title="Scan barcode"
           @click="scanning = true"
         >
           <ScanLine class="size-4" />

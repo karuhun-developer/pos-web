@@ -25,7 +25,7 @@ function copy(value: string) {
           alt="Kode QRIS untuk donasi"
           class="w-56 max-w-full rounded-xl border border-border bg-white p-2"
         />
-        <p class="text-xs text-ink-subtle">Pindai dengan aplikasi apa pun yang mendukung QRIS.</p>
+        <p class="text-xs text-ink-subtle">Scan pakai aplikasi apa pun yang mendukung QRIS.</p>
       </div>
 
       <dl v-if="pay.banks.length" class="space-y-2">

@@ -103,7 +103,7 @@ const REPOS = [
   <GuestLayout
     title="Aplikasi kasir Android yang jalan tanpa internet"
     description="POS Kacaw: aplikasi kasir Android gratis yang tetap jalan offline, lalu sinkron
-                 sendiri ke panel web untuk kelola produk dan baca laporan. Gratis 100%, sumber terbuka."
+                 sendiri ke panel web untuk kelola produk dan baca laporan. Gratis 100%, open source."
   >
     <template #actions>
       <Link v-if="loggedIn" :href="route('dashboard')">
@@ -125,7 +125,7 @@ const REPOS = [
         class="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1
                font-mono text-[11px] tracking-widest text-ink-muted uppercase"
       >
-        Gratis 100% · Sumber terbuka
+        Gratis 100% · Open source
       </span>
 
       <h1
@@ -186,7 +186,7 @@ const REPOS = [
           <Smartphone class="size-4 text-ink" />
           <h3 class="mt-4 text-sm font-medium text-ink">POS Kacaw · Android</h3>
           <p class="mt-1.5 text-sm leading-relaxed text-ink-muted">
-            Kasir, keranjang, pindai barcode, cetak struk, sesi kasir, dan arus kas. Semua
+            Kasir, keranjang, scan barcode, cetak struk, sesi kasir, dan arus kas. Semua
             tersimpan di HP dan tetap bisa dipakai offline.
           </p>
         </div>

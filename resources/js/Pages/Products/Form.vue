@@ -126,8 +126,8 @@ function submit() {
                   v-if="scanSupported"
                   variant="outline"
                   size="icon"
-                  aria-label="Pindai barcode dengan kamera"
-                  title="Pindai barcode"
+                  aria-label="Scan barcode dengan kamera"
+                  title="Scan barcode"
                   @click="scanning = true"
                 >
                   <ScanLine class="size-4" />

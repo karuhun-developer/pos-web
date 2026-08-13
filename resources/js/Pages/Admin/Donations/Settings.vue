@@ -85,7 +85,7 @@ function submit() {
     </template>
 
     <form class="grid gap-4 lg:grid-cols-2" @submit.prevent="submit">
-      <Card title="QRIS" description="Gambar yang dipindai donatur di halaman /dukung">
+      <Card title="QRIS" description="Gambar yang di-scan donatur di halaman /dukung">
         <div class="flex items-start gap-4">
           <div
             class="flex size-32 shrink-0 items-center justify-center overflow-hidden rounded-xl border
