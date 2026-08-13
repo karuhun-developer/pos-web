@@ -1,6 +1,7 @@
 # POS Pro — Product Requirements
 
-**Status:** ✅ Phase 6 (v0.1.0) · Backend cloud untuk **POS Kacaw** (app kasir offline-first).
+**Status:** ✅ Phase 6 (v0.1.0) · 🚧 Fase 7 UI Web (branch `feat/web-ui`) ·
+Backend cloud **+ UI web** untuk **POS Kacaw** (app kasir offline-first).
 
 ## Masalah
 POS Kacaw jalan 100% offline di satu device. Pedagang butuh: **backup cloud**,
@@ -28,11 +29,29 @@ hanya server yang menerima & menyebarkannya.
 - RBAC: spatie/laravel-permission (teams = toko).
 - OpenAPI via Scramble (`/docs/api`).
 
-## Non-goals (Phase 6)
-- UI web admin (murni API).
+## Fase 7 — UI Web (branch `feat/web-ui`)
+
+Keputusan Phase 6 dibalik: POS Pro sekarang punya UI web di samping API-nya.
+
+- **Area toko** — pemilik/kasir mengelola katalog, transaksi, kas, dan laporan lewat
+  browser. Semua tulisan lewat `WriteEntity` sehingga **ikut ter-pull Android**.
+- **Area platform `/admin`** — superadmin melihat toko, pengguna, dan donasi lintas
+  tenant.
+- **Login web**: email/password + **OAuth redirect Google** (Socialite), berbasis
+  session.
+- **Impor/ekspor lebih lengkap dari Android**: CSV/XLSX streaming + impor dengan
+  pratinjau dua langkah.
+- **Donasi** (manual tanpa verifikasi, Paywuz, tautan eksternal).
+
+Detail: [`features/web-ui.md`](features/web-ui.md),
+[`features/donations.md`](features/donations.md),
+[`features/import-export.md`](features/import-export.md).
+
+## Non-goals
 - Realtime/websocket (sync = pull berbasis cursor + interval FE).
-- Pembayaran/billing SaaS, laporan lanjutan, impor massal.
-- OAuth redirect flow Google (kita pakai verifikasi ID token dari client).
+- Pembayaran/billing SaaS (donasi ≠ langganan; donasi tidak membuka fitur apa pun).
+- UI web untuk **kasir bertransaksi** — checkout tetap milik aplikasi Android
+  offline-first; web untuk mengelola & melihat, bukan menjual.
 
 ## Kriteria sukses
 - `composer test` hijau (feature + unit), termasuk isolasi tenant & LWW.

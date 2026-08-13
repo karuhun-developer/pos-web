@@ -5,6 +5,81 @@ Format mengikuti [Keep a Changelog](https://keepachangelog.com/) & [SemVer](http
 
 ## [Unreleased]
 
+### Added — UI Web (Fase 7, branch `feat/web-ui`)
+- **Stack web**: Inertia 2 + Vue 3 + Tailwind v4 + Vite + TypeScript, Ziggy untuk
+  `route()` di sisi Vue, ECharts (`vue-echarts`) untuk chart. Route halaman ada di
+  `routes/web/{guest,app,admin}.php` — **bukan** lewat route-attributes, yang memasang
+  route di luar grup `web` (tanpa session/CSRF/Inertia).
+- **`app/Actions/Sync/WriteEntity.php`** — satu-satunya pintu tulis server, membungkus
+  `ApplyChange` yang sama dengan `POST /sync/push`. Semua CRUD web & hasil impor lewat
+  sini, jadi `updated_at` epoch ms bergerak dan perubahannya **ikut ter-pull Android**;
+  hapus menghasilkan **tombstone**, bukan hard delete. Uji regresinya
+  `tests/Feature/Web/WebSyncTest.php`.
+- **CRUD web area toko**: produk (termasuk unggah gambar lewat entity `media`),
+  kategori, transaksi + void, arus kas + kategori kas, sesi kasir, pengaturan toko,
+  ganti toko aktif.
+- **Laporan & chart** (`app/Actions/Report/*`, `resources/js/Components/reports/*`):
+  KPI + delta, tren penjualan 2 seri, heatmap jam ramai, produk terlaris, komposisi
+  metode bayar, HPP vs margin, arus kas diverging, selisih laci, inventori. Satu filter
+  periode men-scope seluruh halaman; setiap chart punya tampilan tabel; bucketing
+  tanggal di PHP (Asia/Jakarta), bukan SQL khusus driver.
+- **Impor/ekspor** (`/impor-ekspor`): ekspor streaming openspout CSV **dan** XLSX untuk
+  7 dataset, template kosong, dan **impor dua langkah** (pratinjau menandai
+  baru/diperbarui/error → terapkan). Baris error dilewati, bukan membatalkan berkas.
+  Ekspor butuh `reports.view`; impor butuh izin tulis data aslinya.
+  Lihat `docs/features/import-export.md`.
+- **Login web**: email/password (rate limit 5×/menit per email+IP) + **OAuth redirect
+  Google** lewat Socialite. `UpsertGoogleUser` dipakai bersama jalur ID-token Android,
+  jadi satu email tetap satu user. Lihat `docs/features/authentication-google.md`.
+- **Superadmin & panel platform `/admin`**: ringkasan lintas toko, daftar toko +
+  drill-down, daftar pengguna + promosi/penurunan superadmin, daftar donasi.
+  Role `superadmin` disimpan dengan **sentinel `team_id = 0`** (`SetSuperadmin`) karena
+  `model_has_roles.team_id` NOT NULL dan bagian dari PK komposit; `User::isSuperadmin()`
+  membaca pivot langsung tanpa filter team. Command `php artisan pos:superadmin {email}`.
+- **Policy kepemilikan data** (`app/Policies/*` + `ChecksStoreOwnership`): produk milik
+  toko A tidak bisa diubah/dihapus anggota toko B → **403**; kasir tidak bisa menghapus
+  produk; superadmin lolos lewat `Gate::before`. Catatan: pada route web,
+  `SubstituteBindings` berjalan sebelum middleware `store`, jadi yang menghentikan akses
+  lintas toko adalah **policy (403)**, bukan `StoreScope` (yang fail-open).
+- **Donasi**: halaman publik `/dukung` (manual tanpa verifikasi, Paywuz, tautan
+  eksternal), dinding donatur, panel `/admin/donasi` (filter, total, chart bulanan,
+  tandai lunas, ekspor CSV), dan webhook `POST /api/v1/webhooks/paywuz` bertanda tangan
+  HMAC (`hash_equals`; salah → 401) yang **idempoten**.
+  Lihat `docs/features/donations.md`.
+- **Docs**: `docs/features/{web-ui,donations,import-export}.md`;
+  `authentication-google.md` & `rbac-stores.md` diperbarui; `api-contract.md` §7
+  webhook; non-goal "UI web admin"/"impor massal" dicabut dari PRD.
+- **Test**: `tests/Feature/Web/` — 49 kasus (kepemilikan, sync dari web, panel admin,
+  auth web + Google, impor/ekspor, donasi + webhook, smoke semua halaman).
+
+### Fixed
+- **Props Inertia dievaluasi sebelum konteks toko ada** — `Inertia\Middleware::handle()`
+  memanggil `share()` **sebelum** `$next($request)`, jadi blok `auth` yang dihitung
+  langsung berjalan sebelum middleware `store` menyetel `StoreContext`. Akibatnya
+  `auth.current_store` null dan `auth.user.permissions` kosong: topbar menampilkan
+  "Pilih toko" dan **seluruh tombol tulis hilang**, bahkan untuk pemilik toko. Blok
+  `auth` sekarang berupa closure (baru diresolve saat halaman dirender). Bug ini lolos
+  dari 79 test, pint, `vue-tsc`, dan build — yang menangkapnya cuma melihat halamannya
+  di browser. Regresinya dikunci di `tests/Feature/Web/PageSmokeTest.php`.
+- **`inertia.pages.ensure_pages_exist`** dinyalakan di luar produksi + `PageSmokeTest`
+  yang menyusuri semua route GET web: halaman yang komponen Vue-nya belum dibuat
+  (kasusnya `Pages/Dashboard.vue`, yang memang belum ada) dulu hanya ketahuan sebagai
+  "Page not found" di browser; sekarang render-nya gagal keras di test.
+- **`DisplayTime::label()` tidak pernah ada** — dipanggil dua kali di
+  `DashboardController` (fatal begitu `/dashboard` dibuka); diganti
+  `DisplayTime::toLocal()->format()`.
+- **Label persentase pada segmen metode bayar tidak terbaca** di isian terang
+  (`#eda100`). Tinta label kini dihitung dari luminansi isian lewat
+  `charts/theme.ts` → `inkOn()`, bukan dipukul rata putih. Panel yang sama dapat
+  rincian rupiah per metode di bawah batang — satu batang bertumpuk cuma menjawab
+  proporsi, dan sisa tinggi kartu jadi terpakai.
+- **`ExportRequest::format()` → `fileFormat()`** — menimpa
+  `Illuminate\Http\Request::format($default = 'html')` dengan tanda tangan berbeda
+  adalah fatal error PHP yang baru meledak saat kelasnya di-refleksi (Ziggy memindai
+  route), sehingga **seluruh halaman Inertia** ikut mati, bukan cuma ekspor.
+- **`config/inertia.php`** ditambahkan: `pages.paths` diarahkan ke `resources/js/Pages`
+  (bawaan paket menunjuk `js/pages` huruf kecil → selalu gagal di Linux).
+
 ### Added
 - **Kolom `products.barcode_type`** (`string(20)`, default **`EAN13`**) + index
   `(store_id, barcode)` — simbologi barcode yang dipakai klien buat merender &
