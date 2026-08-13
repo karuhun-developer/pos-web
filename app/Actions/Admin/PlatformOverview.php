@@ -55,8 +55,10 @@ class PlatformOverview
             'products' => Product::withoutGlobalScope(StoreScope::class)->whereNull('deleted_at')->count(),
             'orders' => (clone $sales)->count(),
             'revenue' => (int) (clone $sales)->sum('total'),
-            'donation_amount' => (int) Donation::whereIn('status', ['recorded', 'paid'])->sum('amount'),
-            'donation_count' => Donation::whereIn('status', ['recorded', 'paid'])->count(),
+            // Hanya yang sudah diterima superadmin: donasi yang masih menunggu
+            // moderasi belum tentu nyata, jadi tidak ikut jadi angka ringkasan.
+            'donation_amount' => (int) Donation::query()->approved()->sum('amount'),
+            'donation_count' => Donation::query()->approved()->count(),
         ];
     }
 
@@ -114,7 +116,7 @@ class PlatformOverview
         $buckets = array_fill_keys($months, 0);
 
         Donation::query()
-            ->whereIn('status', ['recorded', 'paid'])
+            ->approved()
             ->get(['amount', 'created_at'])
             ->each(function (Donation $donation) use (&$buckets) {
                 $key = $donation->created_at?->timezone(DisplayTime::zone())->format('Y-m');

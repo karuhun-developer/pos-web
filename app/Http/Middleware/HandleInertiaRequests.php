@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Donation;
 use App\Models\User;
 use App\Support\StoreContext;
 use Illuminate\Http\Request;
@@ -63,6 +64,16 @@ class HandleInertiaRequests extends Middleware
                     'current_store' => $this->currentStore($user),
                 ];
             },
+            /*
+             * Antrean moderasi donasi. Dibagikan di sini supaya lencana di
+             * navigasi superadmin ikut turun di setiap halaman — tanpa itu,
+             * pesan spam cuma ketahuan kalau seseorang kebetulan membuka
+             * /admin/donasi. Null untuk pengguna biasa: mereka tidak punya
+             * tempat menampilkannya, dan tidak perlu tahu angkanya.
+             */
+            'platform' => fn () => $request->user()?->isSuperadmin()
+                ? ['pending_donations' => Donation::query()->where('status', 'pending')->count()]
+                : null,
             'flash' => [
                 'success' => fn () => $request->session()->get('success'),
                 'error' => fn () => $request->session()->get('error'),

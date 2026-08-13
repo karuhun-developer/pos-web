@@ -11,6 +11,9 @@ defineProps<{ title: string; subtitle?: string }>()
 const page = usePage<SharedProps>()
 const user = computed(() => page.props.auth.user)
 
+/** Donasi yang menunggu ditinjau — dibagikan lewat props platform. */
+const pendingDonations = computed(() => page.props.platform?.pending_donations ?? 0)
+
 const NAV = [
   { name: 'admin.dashboard', label: 'Ringkasan', icon: LayoutDashboard },
   { name: 'admin.stores.index', label: 'Toko', icon: StoreIcon },
@@ -47,6 +50,15 @@ function isActive(name: string): boolean {
           >
             <component :is="item.icon" class="size-4" />
             {{ item.label }}
+            <!-- Kelir lencana kebalikan dari bar (yang sendirinya membalik di
+                 mode gelap), jadi kontrasnya aman tanpa token khusus. -->
+            <span
+              v-if="item.name === 'admin.donations.index' && pendingDonations"
+              class="rounded-full bg-surface-raised px-1.5 py-0.5 text-[10px] leading-none font-semibold text-ink"
+              :aria-label="`${pendingDonations} donasi menunggu ditinjau`"
+            >
+              {{ pendingDonations }}
+            </span>
           </Link>
         </nav>
 
@@ -78,6 +90,9 @@ function isActive(name: string): boolean {
           :class="isActive(item.name) ? 'bg-white/15 font-medium' : 'opacity-70'"
         >
           {{ item.label }}
+          <template v-if="item.name === 'admin.donations.index' && pendingDonations">
+            ({{ pendingDonations }})
+          </template>
         </Link>
       </nav>
     </header>

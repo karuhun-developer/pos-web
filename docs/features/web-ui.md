@@ -148,7 +148,7 @@ Tema ECharts: `resources/js/charts/theme.ts`.
   `pages.ensure_pages_exist` menyala di luar produksi supaya halaman yang komponennya
   belum dibuat gagal keras di test, bukan jadi "Page not found" di browser.
 - Test: `tests/Feature/Web/{ProductOwnershipTest,WebSyncTest,AdminPanelTest,WebAuthTest,
-  ImportExportTest,DonationTest,PageSmokeTest,ReportPrintTest}.php`.
+  ImportExportTest,DonationTest,DonationSettingsTest,PageSmokeTest,ReportPrintTest}.php`.
 
 ## Area platform (`/admin`)
 Lihat juga [rbac-stores.md](rbac-stores.md) untuk mekanisme role superadmin.
@@ -159,7 +159,8 @@ Lihat juga [rbac-stores.md](rbac-stores.md) untuk mekanisme role superadmin.
 | Toko | daftar lintas tenant + cari, drill-down: KPI, anggota, 10 transaksi terakhir |
 | Pengguna | daftar + cari, tombol jadikan/cabut superadmin (menolak menurunkan diri sendiri) |
 | Log sync | perangkat yang terakhir menulis (id, toko, jumlah row, waktu) + jumlah row & pergerakan terakhir per entity |
-| Donasi | filter kanal/status/tanggal, total, chart per bulan, tandai lunas, ekspor CSV |
+| Donasi | antrean moderasi (terima/tolak), filter kanal/status/tanggal, total, chart per bulan, ekspor CSV |
+| Pengaturan donasi | unggah QRIS, sampai 5 rekening bank, tautan Saweria, catatan halaman |
 
 Log sync **tidak** punya tabel audit sendiri: setiap row entity sudah membawa
 `origin_device` + `updated_at`, jadi `app/Actions/Admin/SyncActivity.php` membaca

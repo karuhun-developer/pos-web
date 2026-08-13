@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { router } from '@inertiajs/vue3'
+import { Link, router } from '@inertiajs/vue3'
 import { watchDebounced } from '@vueuse/core'
-import { Download, Heart, Search } from '@lucide/vue'
+import { Check, Download, Heart, Search, Settings2, X } from '@lucide/vue'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
 import Card from '@/Components/ui/Card.vue'
 import DataTable from '@/Components/ui/DataTable.vue'
@@ -10,7 +10,9 @@ import EmptyState from '@/Components/ui/EmptyState.vue'
 import Pagination from '@/Components/ui/Pagination.vue'
 import StatTile from '@/Components/StatTile.vue'
 import MonthlySeriesPanel from '@/Components/admin/MonthlySeriesPanel.vue'
-import { channelLabel, statusLabel } from '@/lib/donation'
+import Badge from '@/Components/ui/Badge.vue'
+import Button from '@/Components/ui/Button.vue'
+import { channelLabel, statusLabel, statusTone } from '@/lib/donation'
 import { formatIsoDateTime, formatNumber, formatRupiah } from '@/lib/utils'
 import type { Paginated } from '@/types'
 
@@ -25,14 +27,15 @@ interface DonationRow {
   channel: string
   status: string
   created_at: string | null
-  paid_at: string | null
+  reviewed_at: string | null
+  reviewer: string | null
 }
 
 const props = defineProps<{
   donations: Paginated<DonationRow>
   filters: { q: string; channel: string; status: string; from: string; to: string }
   options: { channels: string[]; statuses: string[] }
-  totals: { count: number; amount: number; paid: number; pending: number }
+  totals: { count: number; amount: number; pending: number; rejected: number }
   monthly: { months: string[]; values: number[] }
 }>()
 
@@ -44,11 +47,11 @@ const to = ref(props.filters.to)
 const pending = ref<string | null>(null)
 
 const COLUMNS = [
-  { key: 'donor_name', label: 'Donatur' },
-  { key: 'created_at', label: 'Waktu', hideOnMobile: true },
+  { key: 'donor_name', label: 'Donatur & pesan' },
+  { key: 'created_at', label: 'Masuk', hideOnMobile: true },
   { key: 'channel', label: 'Kanal', hideOnMobile: true },
   { key: 'amount', label: 'Jumlah', align: 'right' as const },
-  { key: 'status', label: 'Status' },
+  { key: 'status', label: 'Tinjauan' },
 ]
 
 /** Satu sumber kebenaran filter: dipakai untuk navigasi sekaligus tautan ekspor. */
@@ -89,9 +92,15 @@ function changeStatus(row: DonationRow, next: string) {
 <template>
   <AdminLayout title="Donasi" subtitle="Dukungan yang masuk lewat halaman publik">
     <template #actions>
+      <Link :href="route('admin.donations.settings')">
+        <Button variant="outline" size="sm">
+          <Settings2 class="size-4" />
+          Cara berdonasi
+        </Button>
+      </Link>
       <a
         :href="exportUrl"
-        class="inline-flex items-center gap-2 rounded-xl border border-border-strong bg-surface-raised px-3 py-2 text-sm text-ink"
+        class="inline-flex h-8 items-center gap-1.5 rounded-xl border border-border-strong bg-surface-raised px-3 text-xs font-medium text-ink"
       >
         <Download class="size-4" />
         Ekspor CSV
@@ -103,11 +112,19 @@ function changeStatus(row: DonationRow, next: string) {
         <StatTile
           label="Terkumpul"
           :value="formatRupiah(totals.amount)"
-          hint="Tercatat + lunas, sesuai filter"
+          hint="Hanya yang sudah diterima, sesuai filter"
         />
-        <StatTile label="Sudah lunas" :value="formatRupiah(totals.paid)" hint="Sudah dicocokkan superadmin" />
         <StatTile label="Jumlah donasi" :value="formatNumber(totals.count)" hint="Semua status" />
-        <StatTile label="Belum dicek" :value="formatNumber(totals.pending)" hint="Belum dicocokkan" />
+        <!-- Antrean moderasi bisa diklik: ini pekerjaan yang menunggu, bukan
+             sekadar angka. -->
+        <button type="button" class="text-left" @click="status = 'pending'">
+          <StatTile
+            label="Menunggu ditinjau"
+            :value="formatNumber(totals.pending)"
+            hint="Klik untuk menyaring"
+          />
+        </button>
+        <StatTile label="Ditolak" :value="formatNumber(totals.rejected)" hint="Tidak tampil di publik" />
       </div>
 
       <MonthlySeriesPanel
@@ -196,21 +213,40 @@ function changeStatus(row: DonationRow, next: string) {
           <template #cell-amount="{ row }">
             <span class="font-medium tabular-nums">{{ formatRupiah(row.amount) }}</span>
           </template>
-          <!-- Status diubah langsung dari daftar: donasi manual memang tidak
-               diverifikasi otomatis, jadi ini satu-satunya cara menandainya. -->
+          <!-- Terima/Tolak langsung dari daftar: nama & pesan baru muncul di
+               halaman publik setelah diterima, jadi ini pekerjaan sehari-hari
+               di halaman ini, bukan aksi tersembunyi di layar detail. -->
           <template #cell-status="{ row }">
-            <select
-              :value="row.status"
-              :disabled="pending === row.order_id"
-              class="h-9 rounded-xl border border-border-strong bg-surface-raised px-2 text-sm text-ink
-                     focus:border-brand focus:outline-none disabled:opacity-50"
-              :aria-label="`Status donasi ${row.order_id}`"
-              @change="changeStatus(row, ($event.target as HTMLSelectElement).value)"
-            >
-              <option v-for="value in options.statuses" :key="value" :value="value">
-                {{ statusLabel(value) }}
-              </option>
-            </select>
+            <div class="flex items-center gap-2">
+              <Badge :tone="statusTone(row.status)">{{ statusLabel(row.status) }}</Badge>
+
+              <button
+                v-if="row.status !== 'approved'"
+                type="button"
+                :disabled="pending === row.order_id"
+                class="flex size-8 items-center justify-center rounded-xl border border-border-strong
+                       text-ink-muted transition hover:text-success disabled:opacity-50"
+                :aria-label="`Terima donasi ${row.order_id}`"
+                @click="changeStatus(row, 'approved')"
+              >
+                <Check class="size-4" />
+              </button>
+
+              <button
+                v-if="row.status !== 'rejected'"
+                type="button"
+                :disabled="pending === row.order_id"
+                class="flex size-8 items-center justify-center rounded-xl border border-border-strong
+                       text-ink-muted transition hover:text-danger disabled:opacity-50"
+                :aria-label="`Tolak donasi ${row.order_id}`"
+                @click="changeStatus(row, 'rejected')"
+              >
+                <X class="size-4" />
+              </button>
+            </div>
+            <p v-if="row.reviewed_at" class="mt-1 text-xs text-ink-subtle">
+              {{ formatIsoDateTime(row.reviewed_at) }}<template v-if="row.reviewer"> · {{ row.reviewer }}</template>
+            </p>
           </template>
         </DataTable>
 

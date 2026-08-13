@@ -50,17 +50,23 @@ Format mengikuti [Keep a Changelog](https://keepachangelog.com/) & [SemVer](http
   produk; superadmin lolos lewat `Gate::before`. Catatan: pada route web,
   `SubstituteBindings` berjalan sebelum middleware `store`, jadi yang menghentikan akses
   lintas toko adalah **policy (403)**, bukan `StoreScope` (yang fail-open).
-- **Donasi**: halaman publik `/dukung` (manual tanpa verifikasi, Paywuz, tautan
-  eksternal), dinding donatur, panel `/admin/donasi` (filter, total, chart bulanan,
-  tandai lunas, ekspor CSV), dan webhook `POST /api/v1/webhooks/paywuz` bertanda tangan
-  HMAC (`hash_equals`; salah → 401) yang **idempoten**.
-  Lihat `docs/features/donations.md`.
+- **Donasi**: halaman publik `/dukung` satu kolom — cara berdonasi (**QRIS, transfer
+  bank, Saweria**) lalu formulir singkat — plus dinding donatur, dan panel
+  `/admin/donasi` (filter, total, chart bulanan, ekspor CSV).
+  Setiap donasi **dimoderasi**: masuk sebagai `pending` dan nama/pesannya baru tampil
+  di halaman publik setelah diterima superadmin (`approved`/`rejected`, lengkap dengan
+  jejak `reviewed_at`/`reviewed_by`) — tanpa itu `/dukung` jadi papan tulis terbuka
+  untuk spam. Antrean yang menunggu tampil sebagai lencana di navigasi `/admin`.
+  Tujuan pembayarannya diatur di **`/admin/donasi/pengaturan`** (unggah QRIS, sampai 5
+  rekening, tautan Saweria, catatan) dan disimpan di tabel `settings` key/value —
+  bukan `.env`, karena nomor rekening berubah tanpa alasan teknis dan tidak layak
+  menunggu deploy. Lihat `docs/features/donations.md`.
 - **Docs**: `docs/features/{web-ui,donations,import-export}.md`;
   `authentication-google.md` & `rbac-stores.md` diperbarui; `api-contract.md` §7
-  webhook; non-goal "UI web admin"/"impor massal" dicabut dari PRD.
-- **Test**: `tests/Feature/Web/` — 53 kasus (kepemilikan, sync dari web, panel admin,
-  auth web + Google, impor/ekspor, donasi + webhook, laporan cetak + gating
-  `reports.view`, smoke semua halaman).
+  non-goal "UI web admin"/"impor massal" dicabut dari PRD.
+- **Test**: `tests/Feature/Web/` — 54 kasus (kepemilikan, sync dari web, panel admin,
+  auth web + Google, impor/ekspor, donasi + moderasi + pengaturannya, laporan cetak +
+  gating `reports.view`, smoke semua halaman).
 
 ### Fixed
 - **Props Inertia dievaluasi sebelum konteks toko ada** — `Inertia\Middleware::handle()`

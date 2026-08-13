@@ -141,6 +141,20 @@ export interface CashierSession extends SyncEntity {
   revenue?: number
 }
 
+export interface BankAccount {
+  bank: string
+  account_number: string
+  account_name: string
+}
+
+/** Cara berdonasi, diatur superadmin di /admin/donasi/pengaturan. */
+export interface PaymentTargetSettings {
+  qris_url: string | null
+  banks: BankAccount[]
+  saweria_url: string | null
+  note: string | null
+}
+
 export interface SharedProps {
   auth: {
     user: AuthUser | null
@@ -148,6 +162,8 @@ export interface SharedProps {
     current_store: StoreSummary | null
   }
   flash: { success: string | null; error: string | null }
+  /** Hanya terisi untuk superadmin — lihat HandleInertiaRequests. */
+  platform: { pending_donations: number } | null
   app: { name: string }
   [key: string]: unknown
 }

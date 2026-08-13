@@ -4,6 +4,7 @@ use App\Actions\Admin\SetSuperadmin;
 use App\Models\Product;
 use App\Models\Store;
 use App\Models\User;
+use App\Support\PlatformSettings;
 use Database\Seeders\RolePermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\PermissionRegistrar;
@@ -12,6 +13,13 @@ use Tests\TestCase;
 pest()->extend(TestCase::class)
     ->use(RefreshDatabase::class)
     ->in('Feature', 'Unit');
+
+/*
+ * PlatformSettings memoize isinya per proses — di web itu berarti per request,
+ * tapi di test satu proses menjalankan banyak kasus. Tanpa flush, pengaturan
+ * dari kasus sebelumnya ikut terbawa padahal tabelnya sudah di-refresh.
+ */
+beforeEach(fn () => PlatformSettings::flush());
 
 /** Epoch ms deterministik untuk test (hindari Date agar stabil). */
 function ms(int $offset = 0): int

@@ -16,9 +16,12 @@ use Inertia\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
- * Daftar donasi untuk superadmin. Filter, tabel, grafik, dan ekspor semuanya
- * membaca dari SATU builder ber-filter — jadi angka di grafik selalu bercerita
- * hal yang sama dengan tabel di bawahnya dan dengan berkas yang diunduh.
+ * Daftar donasi untuk superadmin — sekaligus antrean moderasi: nama & pesan
+ * baru tampil di halaman publik setelah diterima di sini.
+ *
+ * Filter, tabel, grafik, dan ekspor semuanya membaca dari SATU builder
+ * ber-filter — jadi angka di grafik selalu bercerita hal yang sama dengan
+ * tabel di bawahnya dan dengan berkas yang diunduh.
  */
 class AdminDonationController extends Controller
 {
@@ -27,6 +30,7 @@ class AdminDonationController extends Controller
         $this->authorize('viewAny', Donation::class);
 
         $donations = $this->filtered($request)
+            ->with('reviewer:id,name')
             ->latest()
             ->paginate(25)
             ->withQueryString();
@@ -42,7 +46,8 @@ class AdminDonationController extends Controller
             'channel' => $donation->channel,
             'status' => $donation->status,
             'created_at' => $donation->created_at?->toIso8601String(),
-            'paid_at' => $donation->paid_at?->toIso8601String(),
+            'reviewed_at' => $donation->reviewed_at?->toIso8601String(),
+            'reviewer' => $donation->reviewer?->name,
         ]);
 
         return Inertia::render('Admin/Donations/Index', [
@@ -61,7 +66,7 @@ class AdminDonationController extends Controller
     {
         $this->authorize('update', $donation);
 
-        $update->handle($donation, $request->validated('status'));
+        $update->handle($donation, $request->validated('status'), $request->user());
 
         return back()->with('success', 'Status donasi diperbarui.');
     }
@@ -75,7 +80,7 @@ class AdminDonationController extends Controller
         return Spreadsheet::download(
             'csv',
             'donasi-'.DisplayTime::now()->format('Ymd'),
-            ['kode', 'tanggal', 'nama', 'email', 'anonim', 'jumlah', 'kanal', 'status', 'pesan'],
+            ['kode', 'tanggal', 'nama', 'email', 'anonim', 'jumlah', 'kanal', 'status', 'ditinjau', 'pesan'],
             (function () use ($query) {
                 foreach ($query->orderBy('created_at')->cursor() as $donation) {
                     yield [
@@ -87,6 +92,7 @@ class AdminDonationController extends Controller
                         $donation->amount,
                         $donation->channel,
                         $donation->status,
+                        $donation->reviewed_at?->timezone(DisplayTime::zone())->format('Y-m-d H:i'),
                         $donation->message,
                     ];
                 }
@@ -134,9 +140,9 @@ class AdminDonationController extends Controller
 
         return [
             'count' => (clone $query)->count(),
-            'amount' => (int) (clone $query)->whereIn('status', ['recorded', 'paid'])->sum('amount'),
-            'paid' => (int) (clone $query)->where('status', 'paid')->sum('amount'),
-            'pending' => (clone $query)->where('status', 'recorded')->count(),
+            'amount' => (int) (clone $query)->approved()->sum('amount'),
+            'pending' => (clone $query)->where('status', 'pending')->count(),
+            'rejected' => (clone $query)->where('status', 'rejected')->count(),
         ];
     }
 
@@ -153,7 +159,7 @@ class AdminDonationController extends Controller
         $buckets = array_fill_keys($months, 0);
 
         $this->filtered($request)
-            ->whereIn('status', ['recorded', 'paid'])
+            ->approved()
             ->where('created_at', '>=', $start)
             ->select(['amount', 'created_at'])
             ->cursor()

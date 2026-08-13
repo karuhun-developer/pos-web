@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Web;
 
+use App\Support\DonationSettings;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -24,9 +25,10 @@ class DonationRequest extends FormRequest
                 'max:'.(int) config('donation.max'),
             ],
             'message' => ['nullable', 'string', 'max:300'],
-            // `external` tidak pernah dikirim ke sini — kanal itu cuma tautan
-            // keluar, tidak ada yang bisa dicatat dari sisi kami.
-            'channel' => ['required', Rule::in(['manual'])],
+            // Kanal yang belum dikonfigurasi tidak boleh dipilih sekalipun
+            // formulirnya diakali — "sudah transfer ke QRIS" tidak masuk akal
+            // kalau QRIS-nya memang tidak pernah ada.
+            'channel' => ['required', Rule::in(DonationSettings::channels())],
             'is_anonymous' => ['boolean'],
         ];
     }
@@ -39,7 +41,7 @@ class DonationRequest extends FormRequest
             'donor_email' => 'email',
             'amount' => 'nominal',
             'message' => 'pesan',
-            'channel' => 'metode',
+            'channel' => 'cara pembayaran',
         ];
     }
 

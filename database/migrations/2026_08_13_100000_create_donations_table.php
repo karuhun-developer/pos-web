@@ -23,10 +23,14 @@ return new class extends Migration
             $table->string('donor_email')->nullable();
             $table->unsignedBigInteger('amount'); // rupiah bulat, sama seperti uang lain di app ini
             $table->text('message')->nullable();
-            $table->string('channel'); // manual | external
-            $table->string('status'); // recorded | paid | cancelled
+            $table->string('channel'); // qris | transfer | saweria
+            // Nama & pesan donatur tampil di halaman publik, jadi setiap baris
+            // menunggu ditinjau superadmin dulu — tanpa itu /dukung jadi papan
+            // tulis terbuka untuk siapa pun yang mau menempel spam.
+            $table->string('status'); // pending | approved | rejected
             $table->boolean('is_anonymous')->default(false);
-            $table->timestamp('paid_at')->nullable();
+            $table->timestamp('reviewed_at')->nullable();
+            $table->foreignId('reviewed_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
 
             // Panel superadmin memfilter dua kolom ini hampir di setiap query.

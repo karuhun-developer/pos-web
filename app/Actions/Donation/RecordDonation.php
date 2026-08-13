@@ -7,15 +7,16 @@ use App\Models\User;
 use Illuminate\Support\Str;
 
 /**
- * Membuat baris donasi. Tidak ada verifikasi apa pun: donatur transfer
- * sendiri lalu mencatatkannya di sini, dan superadmin yang mencocokkan.
+ * Membuat baris donasi. Pembayarannya tidak diverifikasi — donatur transfer
+ * sendiri lalu mencatatkannya di sini. Yang ditinjau superadmin adalah nama &
+ * pesannya, jadi baris baru selalu lahir `pending`.
  */
 class RecordDonation
 {
     /**
      * @param  array<string,mixed>  $attributes
      */
-    public function handle(array $attributes, ?User $user = null, string $status = 'recorded'): Donation
+    public function handle(array $attributes, ?User $user = null, string $status = 'pending'): Donation
     {
         return Donation::create([
             'user_id' => $user?->getKey(),

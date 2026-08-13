@@ -6,15 +6,16 @@ use App\Actions\Donation\RecordDonation;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Web\DonationRequest;
 use App\Models\Donation;
+use App\Support\DonationSettings;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 /**
- * Halaman donasi publik. Yang tampil hanya kanal yang benar-benar bisa
- * dipakai: transfer butuh nomor rekening atau QRIS terisi, tautan eksternal
- * butuh URL-nya.
+ * Halaman donasi publik. Isinya cuma dua hal: ke mana uangnya dikirim, dan
+ * formulir singkat untuk mencatatnya. Yang tampil hanya kanal yang benar-benar
+ * dikonfigurasi superadmin di /admin/donasi/pengaturan.
  */
 class DonationController extends Controller
 {
@@ -26,17 +27,17 @@ class DonationController extends Controller
                 'min' => (int) config('donation.min'),
                 'max' => (int) config('donation.max'),
             ],
-            'manual' => $this->manualChannel(),
-            'external' => $this->externalLinks(),
+            'pay' => DonationSettings::forDisplay(),
+            'channels' => DonationSettings::channels(),
             'wall' => $this->wall(),
-            'supporters' => Donation::whereIn('status', ['recorded', 'paid'])->count(),
+            'supporters' => Donation::query()->approved()->count(),
             'donor' => $request->user()?->only(['name', 'email']),
         ]);
     }
 
     public function store(DonationRequest $request, RecordDonation $record): RedirectResponse
     {
-        abort_unless($this->manualChannel() !== null, 404);
+        abort_unless(DonationSettings::isOpen(), 404);
 
         $donation = $record->handle($request->validated(), $request->user());
 
@@ -54,41 +55,21 @@ class DonationController extends Controller
                 'status' => $donation->status,
                 'message' => $donation->message,
             ],
-            'manual' => $donation->channel === 'manual' ? $this->manualChannel() : null,
+            'pay' => DonationSettings::forDisplay(),
         ]);
     }
 
-    /** @return array<string,mixed>|null null = kanal manual tidak dikonfigurasi */
-    private function manualChannel(): ?array
-    {
-        $manual = config('donation.manual');
-
-        if (blank($manual['account_number']) && blank($manual['qris_url'])) {
-            return null;
-        }
-
-        return $manual;
-    }
-
-    /** @return list<array<string,string>> */
-    private function externalLinks(): array
-    {
-        return array_values(array_filter(
-            config('donation.external'),
-            fn (array $link) => filled($link['url']),
-        ));
-    }
-
     /**
-     * Dinding donatur. Donasi anonim tetap tampil (namanya disamarkan) supaya
-     * jumlah dukungan terlihat apa adanya; emailnya tidak pernah ikut keluar.
+     * Dinding donatur — hanya yang sudah diterima superadmin. Donasi anonim
+     * tetap tampil (namanya disamarkan) supaya jumlah dukungan terlihat apa
+     * adanya; emailnya tidak pernah ikut keluar.
      *
      * @return list<array<string,mixed>>
      */
     private function wall(): array
     {
         return Donation::query()
-            ->whereIn('status', ['recorded', 'paid'])
+            ->approved()
             ->latest()
             ->limit((int) config('donation.wall_limit'))
             ->get()

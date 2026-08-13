@@ -89,11 +89,11 @@ it('filters donations and keeps totals in step with the table', function () {
 
     Donation::create([
         'order_id' => 'DON-1', 'donor_name' => 'Ani', 'amount' => 50000,
-        'channel' => 'manual', 'status' => 'recorded',
+        'channel' => 'transfer', 'status' => 'approved',
     ]);
     Donation::create([
         'order_id' => 'DON-2', 'donor_name' => 'Budi', 'amount' => 25000,
-        'channel' => 'external', 'status' => 'cancelled',
+        'channel' => 'saweria', 'status' => 'pending',
     ]);
 
     $this->actingAs($superadmin)
@@ -102,39 +102,56 @@ it('filters donations and keeps totals in step with the table', function () {
         ->assertInertia(fn (AssertableInertia $page) => $page
             ->component('Admin/Donations/Index')
             ->has('donations.data', 2)
-            ->where('totals.amount', 50000)   // yang dibatalkan tidak ikut terkumpul
+            ->where('totals.amount', 50000)   // yang belum ditinjau belum ikut terkumpul
             ->where('totals.pending', 1));
 
     $this->actingAs($superadmin)
-        ->get(route('admin.donations.index', ['channel' => 'manual']))
+        ->get(route('admin.donations.index', ['channel' => 'transfer']))
         ->assertOk()
         ->assertInertia(fn (AssertableInertia $page) => $page
             ->has('donations.data', 1)
             ->where('totals.count', 1));
 });
 
-it('lets a superadmin mark a manual donation as paid', function () {
+it('lets a superadmin approve a donation and records who did it', function () {
     $superadmin = makeSuperadmin();
     $donation = Donation::create([
         'order_id' => 'DON-3', 'donor_name' => 'Ani', 'amount' => 50000,
-        'channel' => 'manual', 'status' => 'recorded',
+        'channel' => 'transfer', 'status' => 'pending',
     ]);
 
     $this->actingAs($superadmin)
-        ->put(route('admin.donations.update', $donation), ['status' => 'paid'])
+        ->put(route('admin.donations.update', $donation), ['status' => 'approved'])
         ->assertRedirect();
 
     $donation->refresh();
 
-    expect($donation->status)->toBe('paid')
-        ->and($donation->paid_at)->not->toBeNull();
+    expect($donation->status)->toBe('approved')
+        ->and($donation->reviewed_at)->not->toBeNull()
+        ->and($donation->reviewed_by)->toBe($superadmin->id);
+});
+
+it('keeps a rejected donation off the public wall', function () {
+    $superadmin = makeSuperadmin();
+    $donation = Donation::create([
+        'order_id' => 'DON-5', 'donor_name' => 'Spam', 'amount' => 50000,
+        'channel' => 'transfer', 'status' => 'pending', 'message' => 'beli followers murah',
+    ]);
+
+    $this->actingAs($superadmin)
+        ->put(route('admin.donations.update', $donation), ['status' => 'rejected'])
+        ->assertRedirect();
+
+    $this->get(route('donate.index'))
+        ->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => $page->has('wall', 0)->where('supporters', 0));
 });
 
 it('exports the filtered donation list as csv', function () {
     $superadmin = makeSuperadmin();
     Donation::create([
         'order_id' => 'DON-4', 'donor_name' => 'Ani', 'amount' => 50000,
-        'channel' => 'manual', 'status' => 'recorded',
+        'channel' => 'transfer', 'status' => 'approved',
     ]);
 
     $response = $this->actingAs($superadmin)

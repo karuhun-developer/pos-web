@@ -27,4 +27,13 @@ class DonationPolicy
     {
         return $user->can('donation.manage');
     }
+
+    /**
+     * Mengatur cara berdonasi (QRIS, rekening, Saweria). Tidak menempel pada
+     * satu baris donasi mana pun, jadi abilitynya tingkat kelas.
+     */
+    public function manage(User $user): bool
+    {
+        return $user->can('donation.manage');
+    }
 }

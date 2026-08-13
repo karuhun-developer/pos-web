@@ -3,21 +3,27 @@
 namespace App\Actions\Donation;
 
 use App\Models\Donation;
+use App\Models\User;
 
 /**
- * Superadmin mengubah status donasi secara manual — dipakai untuk transfer
- * manual yang sudah dicek mutasinya, atau membatalkan catatan iseng.
+ * Superadmin menerima atau menolak sebuah donasi. Yang ditinjau bukan uangnya
+ * (itu tidak pernah diverifikasi) melainkan nama & pesan yang akan tampil di
+ * halaman publik.
  *
- * paid_at ikut diurus di sini supaya tidak ada donasi berstatus `paid` tanpa
- * tanggal, atau sebaliknya.
+ * Jejak peninjau ikut disimpan supaya kalau ada pesan lolos yang seharusnya
+ * tidak, ketahuan siapa yang menyetujuinya. Dikembalikan ke `pending` berarti
+ * jejaknya ikut dibersihkan — statusnya memang belum ditinjau lagi.
  */
 class UpdateDonationStatus
 {
-    public function handle(Donation $donation, string $status): Donation
+    public function handle(Donation $donation, string $status, ?User $reviewer = null): Donation
     {
+        $reviewed = $status !== 'pending';
+
         $donation->update([
             'status' => $status,
-            'paid_at' => $status === 'paid' ? ($donation->paid_at ?? now()) : null,
+            'reviewed_at' => $reviewed ? now() : null,
+            'reviewed_by' => $reviewed ? $reviewer?->getKey() : null,
         ]);
 
         return $donation;

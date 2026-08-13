@@ -1,25 +1,26 @@
 /**
- * Label & nada status donasi. Nilai mentahnya (`recorded`, `manual`, …) ada di
+ * Label & nada status donasi. Nilai mentahnya (`pending`, `qris`, …) ada di
  * `Donation::STATUSES` / `Donation::CHANNELS`; di layar selalu tampil dalam
  * Bahasa Indonesia dan selalu berupa teks — warna badge cuma penguat.
  */
 export type Tone = 'neutral' | 'success' | 'warning' | 'danger' | 'brand'
 
 export const CHANNEL_LABELS: Record<string, string> = {
-  manual: 'Transfer manual',
-  external: 'Link eksternal',
+  qris: 'QRIS',
+  transfer: 'Transfer bank',
+  saweria: 'Saweria',
 }
 
 export const STATUS_LABELS: Record<string, string> = {
-  recorded: 'Tercatat',
-  paid: 'Lunas',
-  cancelled: 'Batal',
+  pending: 'Menunggu ditinjau',
+  approved: 'Diterima',
+  rejected: 'Ditolak',
 }
 
 export const STATUS_TONES: Record<string, Tone> = {
-  recorded: 'brand',
-  paid: 'success',
-  cancelled: 'danger',
+  pending: 'warning',
+  approved: 'success',
+  rejected: 'danger',
 }
 
 export function channelLabel(value: string): string {

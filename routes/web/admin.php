@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Web\Admin\AdminDashboardController;
 use App\Http\Controllers\Web\Admin\AdminDonationController;
+use App\Http\Controllers\Web\Admin\AdminDonationSettingsController;
 use App\Http\Controllers\Web\Admin\AdminStoreController;
 use App\Http\Controllers\Web\Admin\AdminSyncController;
 use App\Http\Controllers\Web\Admin\AdminUserController;
@@ -30,4 +31,11 @@ Route::middleware(['auth', 'superadmin'])
         Route::get('donasi', [AdminDonationController::class, 'index'])->name('donations.index');
         Route::put('donasi/{donation}', [AdminDonationController::class, 'update'])->name('donations.update');
         Route::get('donasi/ekspor/csv', [AdminDonationController::class, 'export'])->name('donations.export');
+
+        Route::get('donasi/pengaturan', [AdminDonationSettingsController::class, 'edit'])
+            ->name('donations.settings');
+        // POST, bukan PUT: formulirnya mengunggah gambar QRIS, dan PHP tidak
+        // mengurai multipart pada request PUT.
+        Route::post('donasi/pengaturan', [AdminDonationSettingsController::class, 'update'])
+            ->name('donations.settings.update');
     });
