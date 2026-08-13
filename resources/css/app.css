@@ -10,24 +10,25 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /*
- * Token warna. Nilai surface & teks diambil dari palet data-viz tervalidasi
- * (surface terang #fcfcfb / gelap #1a1a19) supaya chart dan chrome di
- * sekitarnya berada di ruang warna yang sama — kontras seri sudah diuji
- * terhadap dua surface ini. Jangan ganti surface tanpa menjalankan ulang
- * validator palet.
+ * Token warna. Nilainya disamakan dengan POS Kacaw di Android
+ * (`src/assets/index.css`) — satu produk, satu rasa warna: monokrom,
+ * aksennya hitam-arang di terang dan putih-abu di gelap, tanpa warna merek
+ * yang berteriak. Palet chart tetap berwarna dan sudah divalidasi ulang
+ * terhadap surface baru (#f1f2f3 terang / #1f252b gelap) — jangan ganti
+ * surface tanpa menjalankan ulang validator palet.
  */
 :root {
-  --color-surface: #fcfcfb;
+  --color-surface: #f1f2f3;
   --color-surface-raised: #ffffff;
-  --color-surface-sunken: #f4f3f0;
-  --color-border: #e3e1dc;
-  --color-border-strong: #cbc9c2;
-  --color-ink: #0b0b0b;
-  --color-ink-muted: #52514e;
-  --color-ink-subtle: #77756f;
-  --color-brand: #2a78d6;
+  --color-surface-sunken: #e9ebed;
+  --color-border: #dcdee0;
+  --color-border-strong: #c3c7cb;
+  --color-ink: #1c2024;
+  --color-ink-muted: #5e646a;
+  --color-ink-subtle: #838a91;
+  --color-brand: #222933;
   --color-brand-ink: #ffffff;
-  --color-brand-soft: #e8f0fd;
+  --color-brand-soft: #e9ebed;
   --color-success: #1baf7a;
   --color-warning: #eda100;
   --color-danger: #e34948;
@@ -35,17 +36,17 @@
 }
 
 .dark {
-  --color-surface: #1a1a19;
-  --color-surface-raised: #232322;
-  --color-surface-sunken: #131312;
-  --color-border: #34342f;
-  --color-border-strong: #4a4a43;
-  --color-ink: #ffffff;
-  --color-ink-muted: #c3c2b7;
-  --color-ink-subtle: #92918a;
-  --color-brand: #3987e5;
-  --color-brand-ink: #0b0b0b;
-  --color-brand-soft: #17263a;
+  --color-surface: #1f252b;
+  --color-surface-raised: #272f37;
+  --color-surface-sunken: #191e23;
+  --color-border: #363f48;
+  --color-border-strong: #4a545e;
+  --color-ink: #f3f5f7;
+  --color-ink-muted: #989fa8;
+  --color-ink-subtle: #78808a;
+  --color-brand: #e2e5e8;
+  --color-brand-ink: #1c2024;
+  --color-brand-soft: #303942;
   --color-success: #199e70;
   --color-warning: #c98500;
   --color-danger: #e66767;

@@ -17,6 +17,7 @@ import {
   Wallet,
   X,
 } from '@lucide/vue'
+import Logo from '@/Components/Logo.vue'
 import ThemeToggle from '@/Components/ThemeToggle.vue'
 import FlashToast from '@/Components/FlashToast.vue'
 import StoreSwitcher from '@/Components/StoreSwitcher.vue'
@@ -74,7 +75,7 @@ function logout() {
     >
       <div class="flex h-16 shrink-0 items-center gap-2 border-b border-border px-5">
         <div class="flex size-8 items-center justify-center rounded-lg bg-brand text-brand-ink">
-          <Package class="size-4" />
+          <Logo class="size-4" />
         </div>
         <span class="text-sm font-semibold text-ink">POS Pro</span>
         <button
@@ -124,15 +125,15 @@ function logout() {
                  transition hover:bg-surface-sunken hover:text-ink"
         >
           <Heart class="size-4 shrink-0" />
-          Dukung POS Pro
+          Dukung
         </Link>
         <Link
-          :href="route('about')"
+          :href="route('home')"
           class="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-ink-muted
                  transition hover:bg-surface-sunken hover:text-ink"
         >
           <Info class="size-4 shrink-0" />
-          Tentang
+          Tentang POS Kacaw
         </Link>
       </div>
     </aside>

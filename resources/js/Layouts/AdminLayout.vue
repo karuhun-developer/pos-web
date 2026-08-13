@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { Head, Link, router, usePage } from '@inertiajs/vue3'
 import { ArrowLeft, Heart, LayoutDashboard, LogOut, RefreshCw, Store as StoreIcon, Users } from '@lucide/vue'
+import Logo from '@/Components/Logo.vue'
 import ThemeToggle from '@/Components/ThemeToggle.vue'
 import FlashToast from '@/Components/FlashToast.vue'
 import type { SharedProps } from '@/types'
@@ -38,7 +39,10 @@ function isActive(name: string): boolean {
   <div class="min-h-screen bg-surface">
     <header class="border-b border-border bg-ink text-surface-raised">
       <div class="mx-auto flex h-14 max-w-7xl items-center gap-4 px-4 lg:px-8">
-        <span class="text-sm font-semibold">POS Pro · Superadmin</span>
+        <span class="flex items-center gap-2 text-sm font-semibold">
+          <Logo class="size-5" />
+          POS Pro · Superadmin
+        </span>
 
         <nav class="ml-4 hidden items-center gap-1 sm:flex">
           <Link

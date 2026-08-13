@@ -7,6 +7,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title inertia>{{ config('app.name', 'POS Pro') }}</title>
 
+    {{-- favicon.svg jadi yang utama (tajam di semua ukuran, ikut zoom tab);
+         .ico tetap ada untuk browser lama yang mengabaikan tipe SVG. --}}
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="/favicon.ico" sizes="32x32">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <meta name="theme-color" content="#222933">
+
     {{-- Cat tema sebelum CSS dieksekusi supaya tidak ada kedipan terang→gelap. --}}
     <script>
         (function () {
