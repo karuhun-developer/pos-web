@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { Link, useForm } from '@inertiajs/vue3'
-import { ArrowLeft, ImageOff, Upload, X } from '@lucide/vue'
+import { ArrowLeft, ImageOff, ScanLine, Upload, X } from '@lucide/vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
+import BarcodeScanner from '@/Components/BarcodeScanner.vue'
 import Button from '@/Components/ui/Button.vue'
 import Card from '@/Components/ui/Card.vue'
 import FormField from '@/Components/ui/FormField.vue'
 import Input from '@/Components/ui/Input.vue'
+import { isScanSupported, toSymbology } from '@/lib/barcode'
 import type { Category, Product } from '@/types'
 
 const props = defineProps<{
@@ -34,6 +36,19 @@ const form = useForm({
 })
 
 const preview = ref<string | null>(props.product?.image_url ?? null)
+
+const scanning = ref(false)
+const scanSupported = isScanSupported()
+
+function fillBarcode(value: string, format: string) {
+  form.barcode = value
+
+  const symbology = toSymbology(format)
+
+  // Simbologi cuma ditimpa kalau dekodernya mengenalinya; QR (dan format lain
+  // di luar daftar) dibiarkan apa adanya supaya pilihan yang sudah ada tidak hilang.
+  if (symbology && BARCODE_TYPES.includes(symbology)) form.barcode_type = symbology
+}
 
 function pickImage(event: Event) {
   const file = (event.target as HTMLInputElement).files?.[0] ?? null
@@ -99,7 +114,24 @@ function submit() {
             </FormField>
 
             <FormField label="Barcode" :error="form.errors.barcode">
-              <Input v-model="form.barcode" :invalid="!!form.errors.barcode" placeholder="8991234567890" />
+              <div class="flex gap-2">
+                <Input
+                  v-model="form.barcode"
+                  :invalid="!!form.errors.barcode"
+                  placeholder="8991234567890"
+                  class="flex-1"
+                />
+                <Button
+                  v-if="scanSupported"
+                  variant="outline"
+                  size="icon"
+                  aria-label="Pindai barcode dengan kamera"
+                  title="Pindai barcode"
+                  @click="scanning = true"
+                >
+                  <ScanLine class="size-4" />
+                </Button>
+              </div>
             </FormField>
 
             <FormField label="Simbologi barcode" :error="form.errors.barcode_type">
@@ -196,5 +228,7 @@ function submit() {
         </div>
       </div>
     </form>
+
+    <BarcodeScanner v-model:open="scanning" @detected="fillBarcode" />
   </AppLayout>
 </template>

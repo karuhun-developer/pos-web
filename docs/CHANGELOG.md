@@ -61,6 +61,10 @@ Format mengikuti [Keep a Changelog](https://keepachangelog.com/) & [SemVer](http
   rekening, tautan Saweria, catatan) dan disimpan di tabel `settings` key/value —
   bukan `.env`, karena nomor rekening berubah tanpa alasan teknis dan tidak layak
   menunggu deploy. Lihat `docs/features/donations.md`.
+- **Pindai barcode di web**: tombol kamera di form produk (mengisi barcode sekaligus
+  simbologinya) dan di kotak cari daftar produk. `BarcodeDetector` bawaan browser kalau
+  ada, `@zxing/browser` sebagai cadangan lewat `import()` dinamis supaya dekodernya tidak
+  ikut di bundle utama. Tombol disembunyikan di browser/konteks tanpa kamera.
 - **Halaman `/tentang`**: versi yang sedang berjalan (`APP_VERSION`, diisi pipeline deploy
   dari tag git), keterangan singkat, dan tautan ke repo web & Android. Terbuka tanpa
   login — orang yang menimbang mau memakai POS Pro harus bisa melihat kodenya sebelum

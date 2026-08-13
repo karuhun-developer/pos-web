@@ -12,6 +12,8 @@
         "@tailwindcss/vite": "^4.0.0",
         "@vitejs/plugin-vue": "^6.0.8",
         "@vueuse/core": "^14.4.0",
+        "@zxing/browser": "^0.1.5",
+        "@zxing/library": "^0.21.3",
         "concurrently": "^9.0.1",
         "echarts": "^6.1.0",
         "laravel-vite-plugin": "^3.1",

@@ -96,7 +96,7 @@ membuang ikon merek, jadi tidak ada yang bisa diimpor.
 | Halaman | Route | Isi |
 |---|---|---|
 | Dashboard | `dashboard` | KPI hari ini, transaksi terakhir |
-| Produk | `products.*` | daftar + cari + filter kategori, form (gambar, barcode, stok), hapus |
+| Produk | `products.*` | daftar + cari + filter kategori + **pindai barcode**, form (gambar, barcode, stok), hapus |
 | Kategori | `categories.*` | nama, warna, urutan |
 | Transaksi | `sales.*` | daftar, detail struk, **batalkan** (`sale.void`) |
 | Arus kas | `cashflow.*` | entri masuk/keluar + kelola kategori kas |
@@ -106,6 +106,22 @@ membuang ikon merek, jadi tidak ada yang bisa diimpor.
 | Impor/Ekspor | `io.*` | lihat [import-export.md](import-export.md) |
 | Pengaturan toko | `store.edit` | ganti nama, daftar anggota |
 | Ganti toko aktif | `stores.switch` | set `current_store_id` (validasi keanggotaan) |
+
+## Pindai barcode (web)
+`resources/js/Components/BarcodeScanner.vue` + `resources/js/lib/barcode.ts`. Dipakai di
+form produk (mengisi barcode **dan** simbologinya — dekodernya sudah tahu formatnya) dan
+di kotak cari daftar produk.
+
+Dua jalur dekode, dipilih otomatis: **`BarcodeDetector` bawaan** (Chrome/Edge/Android;
+dekoder OS, nol byte tambahan) dan **`@zxing/browser`** sebagai cadangan (Firefox, Safari
+desktop). ZXing di-`import()` dinamis — ~400 kB itu hanya diunduh orang yang menekan
+tombol pindai, bukan setiap pemuatan halaman; hasilnya jadi chunk terpisah di `npm run build`.
+
+Yang dipegang komponen cuma kamera, loop (satu frame per 150 ms — mendekode 60×/detik
+tidak membaca lebih banyak barcode, cuma memanaskan HP), dan UI. Tombolnya **tidak
+ditawarkan** kalau `navigator.mediaDevices.getUserMedia` tidak ada: di luar https/localhost
+kamera memang mustahil, jadi lebih baik tidak menjanjikannya. Kamera dimatikan saat dialog
+ditutup, saat komponen di-unmount, dan saat izin baru keluar setelah dialog terlanjur ditutup.
 
 ## Laporan & chart
 Action di `app/Actions/Report/*` mengembalikan array siap-render. **Bucketing tanggal

@@ -2,8 +2,9 @@
 import { computed, ref, watch } from 'vue'
 import { Link, router, usePage } from '@inertiajs/vue3'
 import { watchDebounced } from '@vueuse/core'
-import { ImageOff, PackagePlus, PackageSearch, Pencil, Search, Trash2 } from '@lucide/vue'
+import { ImageOff, PackagePlus, PackageSearch, Pencil, ScanLine, Search, Trash2 } from '@lucide/vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
+import BarcodeScanner from '@/Components/BarcodeScanner.vue'
 import Button from '@/Components/ui/Button.vue'
 import Card from '@/Components/ui/Card.vue'
 import Badge from '@/Components/ui/Badge.vue'
@@ -11,6 +12,7 @@ import Input from '@/Components/ui/Input.vue'
 import EmptyState from '@/Components/ui/EmptyState.vue'
 import Pagination from '@/Components/ui/Pagination.vue'
 import Modal from '@/Components/ui/Modal.vue'
+import { isScanSupported } from '@/lib/barcode'
 import { formatNumber, formatRupiah } from '@/lib/utils'
 import type { Category, Paginated, Product, SharedProps } from '@/types'
 
@@ -27,6 +29,18 @@ const search = ref(props.filters.q)
 const category = ref(props.filters.category ?? '')
 const status = ref(props.filters.status)
 const confirming = ref<Product | null>(null)
+
+const scanning = ref(false)
+const scanSupported = isScanSupported()
+
+/*
+ * Hasil pindai cukup ditaruh di kotak cari — watcher debounce yang sama yang
+ * mengirimkannya. Memanggil apply() langsung di sini malah membuat dua request
+ * untuk satu pindaian.
+ */
+function searchScanned(value: string) {
+  search.value = value
+}
 
 const categoryNames = computed(
   () => new Map(props.categories.map((c) => [c.id, c.name])),
@@ -76,6 +90,17 @@ function destroy() {
                    text-ink placeholder:text-ink-subtle focus:border-brand focus:outline-none"
           />
         </div>
+
+        <Button
+          v-if="scanSupported"
+          variant="outline"
+          size="icon"
+          aria-label="Cari lewat pindaian barcode"
+          title="Pindai barcode"
+          @click="scanning = true"
+        >
+          <ScanLine class="size-4" />
+        </Button>
 
         <select
           v-model="category"
@@ -177,5 +202,7 @@ function destroy() {
         <Button variant="danger" size="sm" @click="destroy">Hapus</Button>
       </template>
     </Modal>
+
+    <BarcodeScanner v-model:open="scanning" @detected="searchScanned" />
   </AppLayout>
 </template>
