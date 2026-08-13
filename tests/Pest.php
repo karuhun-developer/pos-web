@@ -1,5 +1,7 @@
 <?php
 
+use App\Actions\Admin\SetSuperadmin;
+use App\Models\Product;
 use App\Models\Store;
 use App\Models\User;
 use Database\Seeders\RolePermissionSeeder;
@@ -48,6 +50,47 @@ function makeMember(Store $store, string $role = 'owner'): User
     $user->assignRole($role);
 
     return $user;
+}
+
+/**
+ * User dengan role platform `superadmin` (team id null — role ini tidak
+ * ber-scope toko, lihat User::isSuperadmin()).
+ *
+ * @param  array<string,mixed>  $attributes
+ */
+function makeSuperadmin(array $attributes = []): User
+{
+    seedRoles();
+    $user = User::factory()->create($attributes);
+
+    app(SetSuperadmin::class)->grant($user);
+
+    return $user;
+}
+
+/**
+ * Buat produk lewat jalur web sungguhan (POST /produk), bukan Eloquent
+ * langsung — supaya yang diuji memang row yang ditulis WriteEntity, lengkap
+ * dengan updated_at epoch ms-nya.
+ *
+ * @param  array<string,mixed>  $attributes
+ */
+function webProduct(Store $store, User $actor, array $attributes = []): Product
+{
+    test()->actingAs($actor)
+        ->post(route('products.store'), array_merge([
+            'name' => 'Kopi Susu',
+            'price' => 18000,
+            'cost' => 9000,
+            'active' => true,
+        ], $attributes))
+        ->assertRedirect(route('products.index'));
+
+    return Product::withoutGlobalScopes()
+        ->where('store_id', $store->id)
+        ->whereNull('deleted_at')
+        ->orderByDesc('updated_at')
+        ->firstOrFail();
 }
 
 /** Amplop ChangeEnvelope siap-push. */
