@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { Head, Link, router, usePage } from '@inertiajs/vue3'
-import { ArrowLeft, Heart, LayoutDashboard, LogOut, Store as StoreIcon, Users } from '@lucide/vue'
+import { ArrowLeft, Heart, LayoutDashboard, LogOut, RefreshCw, Store as StoreIcon, Users } from '@lucide/vue'
 import ThemeToggle from '@/Components/ThemeToggle.vue'
 import FlashToast from '@/Components/FlashToast.vue'
 import type { SharedProps } from '@/types'
@@ -15,6 +15,7 @@ const NAV = [
   { name: 'admin.dashboard', label: 'Ringkasan', icon: LayoutDashboard },
   { name: 'admin.stores.index', label: 'Toko', icon: StoreIcon },
   { name: 'admin.users.index', label: 'Pengguna', icon: Users },
+  { name: 'admin.sync.index', label: 'Log sync', icon: RefreshCw },
   { name: 'admin.donations.index', label: 'Donasi', icon: Heart },
 ]
 

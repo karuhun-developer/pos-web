@@ -145,3 +145,24 @@ it('exports the filtered donation list as csv', function () {
 
     expect($csv)->toContain('DON-4')->toContain('Ani');
 });
+
+/*
+ * Log sync dibaca langsung dari origin_device + updated_at pada row entity,
+ * bukan dari tabel audit terpisah — jadi yang diuji di sini adalah bahwa
+ * tulisan dari web benar-benar meninggalkan jejak yang bisa dibaca.
+ */
+it('shows which device wrote last in the sync log', function () {
+    webProduct($this->store, $this->owner);
+    $superadmin = makeSuperadmin();
+
+    $this->actingAs($superadmin)
+        ->get(route('admin.sync.index'))
+        ->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->component('Admin/Sync')
+            ->where('totals.web_devices', 1)
+            ->where('devices.0.device', 'web:'.$this->owner->id)
+            ->where('devices.0.store', 'Toko A')
+            ->where('devices.0.is_web', true)
+            ->where('devices.0.label', $this->owner->name.' (web)'));
+});

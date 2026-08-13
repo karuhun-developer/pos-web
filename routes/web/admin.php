@@ -3,6 +3,7 @@
 use App\Http\Controllers\Web\Admin\AdminDashboardController;
 use App\Http\Controllers\Web\Admin\AdminDonationController;
 use App\Http\Controllers\Web\Admin\AdminStoreController;
+use App\Http\Controllers\Web\Admin\AdminSyncController;
 use App\Http\Controllers\Web\Admin\AdminUserController;
 use Illuminate\Support\Facades\Route;
 
@@ -23,6 +24,8 @@ Route::middleware(['auth', 'superadmin'])
         Route::get('pengguna', [AdminUserController::class, 'index'])->name('users.index');
         Route::post('pengguna/{user}/superadmin', [AdminUserController::class, 'toggleSuperadmin'])
             ->name('users.superadmin');
+
+        Route::get('sync', AdminSyncController::class)->name('sync.index');
 
         Route::get('donasi', [AdminDonationController::class, 'index'])->name('donations.index');
         Route::put('donasi/{donation}', [AdminDonationController::class, 'update'])->name('donations.update');
