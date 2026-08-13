@@ -21,6 +21,16 @@ class SalePolicy
     }
 
     /**
+     * Melihat daftar transaksi (pekerjaan kasir sehari-hari) berbeda dengan
+     * membaca laporan omzet, margin, dan selisih laci seluruh toko — yang
+     * terakhir butuh `reports.view`, izin yang tidak dipunyai role cashier.
+     */
+    public function viewReports(User $user): bool
+    {
+        return $this->memberOfCurrentStore($user) && $user->can('reports.view');
+    }
+
+    /**
      * Transaksi dibuat di kasir (Android), bukan di web. Web hanya membaca dan
      * membatalkan.
      */

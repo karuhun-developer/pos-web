@@ -28,16 +28,25 @@ const mobileNav = ref(false)
 
 const user = computed(() => page.props.auth.user)
 
-const NAV = [
+const ALL_NAV = [
   { name: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { name: 'products.index', label: 'Produk', icon: Package },
   { name: 'categories.index', label: 'Kategori', icon: Boxes },
   { name: 'sales.index', label: 'Transaksi', icon: ArrowLeftRight },
   { name: 'cashflow.index', label: 'Arus Kas', icon: Wallet },
-  { name: 'reports.index', label: 'Laporan', icon: BarChart3 },
+  { name: 'reports.index', label: 'Laporan', icon: BarChart3, permission: 'reports.view' },
   { name: 'io.index', label: 'Impor/Ekspor', icon: FileSpreadsheet },
   { name: 'store.edit', label: 'Pengaturan Toko', icon: Settings },
 ]
+
+/*
+ * Menu yang ujungnya 403 tidak ditawarkan. Ini murni sopan santun UI —
+ * penegakannya tetap di policy (ReportController → Sale::viewReports), jadi
+ * mengetik URL-nya langsung pun tetap ditolak.
+ */
+const NAV = computed(() =>
+  ALL_NAV.filter((item) => !item.permission || (user.value?.permissions.includes(item.permission) ?? false)),
+)
 
 /** Highlight nav: cocokkan prefix path supaya halaman detail ikut aktif. */
 function isActive(name: string): boolean {
