@@ -23,6 +23,11 @@ Format mengikuti [Keep a Changelog](https://keepachangelog.com/) & [SemVer](http
   metode bayar, HPP vs margin, arus kas diverging, selisih laci, inventori. Satu filter
   periode men-scope seluruh halaman; setiap chart punya tampilan tabel; bucketing
   tanggal di PHP (Asia/Jakarta), bukan SQL khusus driver.
+- **Cetak/PDF laporan** (`/laporan/cetak`): Blade print-friendly
+  (`resources/views/reports/print.blade.php`), chart diganti tabel karena di kertas
+  tidak ada tooltip, dan "simpan sebagai PDF" diserahkan ke dialog cetak browser —
+  tanpa pustaka PDF baru beserta font & layout engine-nya. Rentang waktu dibawa lewat
+  querystring supaya kertas dan layar menampilkan angka yang sama.
 - **Impor/ekspor** (`/impor-ekspor`): ekspor streaming openspout CSV **dan** XLSX untuk
   7 dataset, template kosong, dan **impor dua langkah** (pratinjau menandai
   baru/diperbarui/error → terapkan). Baris error dilewati, bukan membatalkan berkas.
@@ -32,7 +37,11 @@ Format mengikuti [Keep a Changelog](https://keepachangelog.com/) & [SemVer](http
   Google** lewat Socialite. `UpsertGoogleUser` dipakai bersama jalur ID-token Android,
   jadi satu email tetap satu user. Lihat `docs/features/authentication-google.md`.
 - **Superadmin & panel platform `/admin`**: ringkasan lintas toko, daftar toko +
-  drill-down, daftar pengguna + promosi/penurunan superadmin, daftar donasi.
+  drill-down, daftar pengguna + promosi/penurunan superadmin, daftar donasi, dan
+  **log sync** (`/admin/sync`) — perangkat mana yang terakhir menulis, berapa row
+  yang ia tulis, serta jumlah row & pergerakan terakhir per entity. Tidak ada tabel
+  audit baru: `origin_device` + `updated_at` sudah menempel di tiap row entity, jadi
+  `SyncActivity` membacanya langsung dan log tidak bisa bercerita beda dari datanya.
   Role `superadmin` disimpan dengan **sentinel `team_id = 0`** (`SetSuperadmin`) karena
   `model_has_roles.team_id` NOT NULL dan bagian dari PK komposit; `User::isSuperadmin()`
   membaca pivot langsung tanpa filter team. Command `php artisan pos:superadmin {email}`.
@@ -49,8 +58,9 @@ Format mengikuti [Keep a Changelog](https://keepachangelog.com/) & [SemVer](http
 - **Docs**: `docs/features/{web-ui,donations,import-export}.md`;
   `authentication-google.md` & `rbac-stores.md` diperbarui; `api-contract.md` §7
   webhook; non-goal "UI web admin"/"impor massal" dicabut dari PRD.
-- **Test**: `tests/Feature/Web/` — 49 kasus (kepemilikan, sync dari web, panel admin,
-  auth web + Google, impor/ekspor, donasi + webhook, smoke semua halaman).
+- **Test**: `tests/Feature/Web/` — 53 kasus (kepemilikan, sync dari web, panel admin,
+  auth web + Google, impor/ekspor, donasi + webhook, laporan cetak + gating
+  `reports.view`, smoke semua halaman).
 
 ### Fixed
 - **Props Inertia dievaluasi sebelum konteks toko ada** — `Inertia\Middleware::handle()`
@@ -73,6 +83,17 @@ Format mengikuti [Keep a Changelog](https://keepachangelog.com/) & [SemVer](http
   `charts/theme.ts` → `inkOn()`, bukan dipukul rata putih. Panel yang sama dapat
   rincian rupiah per metode di bawah batang — satu batang bertumpuk cuma menjawab
   proporsi, dan sisa tinggi kartu jadi terpakai.
+- **Halaman laporan hanya butuh keanggotaan toko** — `/laporan` memakai
+  `SalePolicy::viewAny()`, yang cuma memeriksa user anggota toko aktif. Akibatnya
+  **kasir bisa membuka omzet, margin, dan selisih laci seluruh toko** hanya dengan
+  mengetik URL-nya, padahal izin `reports.view` memang tidak diberikan kepadanya.
+  Sekarang ada `SalePolicy::viewReports()` (keanggotaan **dan** `reports.view`) yang
+  dipanggil di `ReportController::index()` maupun `print()`; item menu "Laporan" pun
+  disaring dari sidebar untuk yang tidak berizin — penegakannya tetap di policy, jadi
+  URL langsung ikut ditolak. Dijaga `tests/Feature/Web/ReportPrintTest.php`.
+- **Kolom "Keluar" pada laporan cetak menampilkan negatif ganda** — server mengirim
+  pengeluaran bertanda minus untuk chart diverging; di kolom yang judulnya sudah
+  "Keluar", tandanya dicetak nilai mutlak.
 - **`ExportRequest::format()` → `fileFormat()`** — menimpa
   `Illuminate\Http\Request::format($default = 'html')` dengan tanda tangan berbeda
   adalah fatal error PHP yang baru meledak saat kelasnya di-refleksi (Ziggy memindai

@@ -83,7 +83,8 @@ Dikunci `tests/Feature/Web/PageSmokeTest.php`.
 | Transaksi | `sales.*` | daftar, detail struk, **batalkan** (`sale.void`) |
 | Arus kas | `cashflow.*` | entri masuk/keluar + kelola kategori kas |
 | Sesi kasir | `sessions.index` | riwayat buka/tutup laci + selisih |
-| Laporan | `reports.index` | lihat `docs/features/` bagian laporan di bawah |
+| Laporan | `reports.index` | lihat bagian laporan di bawah — butuh `reports.view` |
+| Cetak laporan | `reports.print` | versi kertas (HTML polos, bukan Inertia) |
 | Impor/Ekspor | `io.*` | lihat [import-export.md](import-export.md) |
 | Pengaturan toko | `store.edit` | ganti nama, daftar anggota |
 | Ganti toko aktif | `stores.switch` | set `current_store_id` (validasi keanggotaan) |
@@ -107,6 +108,17 @@ layar selalu berasal dari rentang yang sama.
 | Arus kas per hari | diverging bar |
 | Selisih laci per sesi | diverging |
 | Stok menipis & nilai inventori | tabel + stat tile |
+
+Halaman laporan (dan versi cetaknya) butuh izin **`reports.view`**, bukan sekadar
+keanggotaan toko: `SalePolicy::viewReports()`. Kasir boleh melihat daftar transaksi,
+tapi tidak omzet, margin, dan selisih laci seluruh toko — item menu "Laporan" pun tidak
+ditawarkan kepadanya.
+
+**Cetak / PDF** (`reports.print`): Blade biasa di `resources/views/reports/print.blade.php`,
+chart diganti tabel, dan penyimpanan PDF diserahkan ke dialog cetak browser — tanpa
+pustaka PDF baru yang harus ikut dirawat (font, layout engine, halaman). Rentang waktu
+dibawa lewat querystring supaya kertas dan layar menampilkan angka yang sama.
+Dijaga `tests/Feature/Web/ReportPrintTest.php`.
 
 Aturan visualisasi yang dipegang: **tidak ada dual-axis**, urutan hue kategorikal tetap
 dan tidak pernah didaur ulang, sequential = satu hue, legend hadir untuk ≥2 seri, dan
@@ -136,7 +148,7 @@ Tema ECharts: `resources/js/charts/theme.ts`.
   `pages.ensure_pages_exist` menyala di luar produksi supaya halaman yang komponennya
   belum dibuat gagal keras di test, bukan jadi "Page not found" di browser.
 - Test: `tests/Feature/Web/{ProductOwnershipTest,WebSyncTest,AdminPanelTest,WebAuthTest,
-  ImportExportTest,DonationTest,PageSmokeTest}.php`.
+  ImportExportTest,DonationTest,PageSmokeTest,ReportPrintTest}.php`.
 
 ## Area platform (`/admin`)
 Lihat juga [rbac-stores.md](rbac-stores.md) untuk mekanisme role superadmin.
@@ -146,4 +158,11 @@ Lihat juga [rbac-stores.md](rbac-stores.md) untuk mekanisme role superadmin.
 | Ringkasan | KPI platform, pertumbuhan toko & pengguna (line 2 seri), omzet & donasi per bulan, aktivitas terbaru |
 | Toko | daftar lintas tenant + cari, drill-down: KPI, anggota, 10 transaksi terakhir |
 | Pengguna | daftar + cari, tombol jadikan/cabut superadmin (menolak menurunkan diri sendiri) |
+| Log sync | perangkat yang terakhir menulis (id, toko, jumlah row, waktu) + jumlah row & pergerakan terakhir per entity |
 | Donasi | filter kanal/status/tanggal, total, chart per bulan, tandai lunas, ekspor CSV |
+
+Log sync **tidak** punya tabel audit sendiri: setiap row entity sudah membawa
+`origin_device` + `updated_at`, jadi `app/Actions/Admin/SyncActivity.php` membaca
+datanya langsung. Tidak ada tabel kedua yang harus ikut dibersihkan, dan tidak ada
+kemungkinan log bercerita beda dari datanya. `origin_device` bernilai `web:{user_id}`
+untuk tulisan dari web (lihat `WriteEntity`), sisanya id perangkat Android.
