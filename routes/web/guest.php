@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\Web\AboutController;
 use App\Http\Controllers\Web\Auth\GoogleController;
 use App\Http\Controllers\Web\Auth\LoginController;
 use App\Http\Controllers\Web\Auth\RegisterController;
@@ -9,8 +8,6 @@ use App\Http\Controllers\Web\LandingController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [LandingController::class, 'index'])->name('home');
-
-Route::get('tentang', AboutController::class)->name('about');
 
 // Donasi terbuka untuk publik — tidak perlu login. Karena bisa ditulis tanpa
 // akun, POST-nya dibatasi kecepatannya supaya tabel donasi tidak bisa

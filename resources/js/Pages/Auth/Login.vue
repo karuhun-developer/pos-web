@@ -18,7 +18,7 @@ function submit() {
   <GuestLayout title="Masuk">
     <div class="flex flex-1 items-center justify-center px-4 py-10">
       <div class="w-full max-w-sm">
-        <h1 class="text-xl font-semibold text-ink">Masuk ke POS Pro</h1>
+        <h1 class="text-xl font-semibold text-ink">Masuk ke panel web</h1>
         <p class="mt-1 text-sm text-ink-muted">Kelola produk, transaksi, dan laporan tokomu.</p>
 
         <a

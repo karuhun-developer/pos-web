@@ -10,7 +10,12 @@ import { applyStoredTheme } from '@/lib/theme'
 applyStoredTheme()
 
 createInertiaApp({
-  title: (title) => (title ? `${title} · POS Pro` : 'POS Pro'),
+  /*
+   * Yang dipromosikan ke publik itu aplikasi Androidnya, jadi nama produk di
+   * <title> adalah POS Kacaw — POS Pro cuma nama panel webnya. Halaman
+   * mengirim judul spesifiknya saja supaya tidak jadi "POS Pro · POS Pro".
+   */
+  title: (title) => (title ? `${title} · POS Kacaw` : 'POS Kacaw'),
   resolve: (name) =>
     resolvePageComponent(
       `./Pages/${name}.vue`,
@@ -25,5 +30,5 @@ createInertiaApp({
       .use(ZiggyVue)
       .mount(el)
   },
-  progress: { color: '#2a78d6' },
+  progress: { color: '#222933' },
 })

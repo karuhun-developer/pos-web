@@ -1,26 +1,38 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3'
-import { Package } from '@lucide/vue'
+import Logo from '@/Components/Logo.vue'
+import GithubIcon from '@/Components/GithubIcon.vue'
 import ThemeToggle from '@/Components/ThemeToggle.vue'
 import FlashToast from '@/Components/FlashToast.vue'
 
-defineProps<{ title: string }>()
+/*
+ * Merek yang dipajang ke publik adalah POS Kacaw — aplikasi Androidnya yang
+ * dipromosikan. POS Pro cuma nama panel webnya, jadi namanya baru muncul
+ * setelah orangnya masuk (lihat AppLayout).
+ */
+defineProps<{ title: string; description?: string }>()
 </script>
 
 <template>
-  <Head :title="title" />
+  <Head :title="title">
+    <meta v-if="description" head-key="description" name="description" :content="description" />
+  </Head>
 
   <div class="flex min-h-screen flex-col bg-surface">
-    <header class="flex h-16 shrink-0 items-center gap-3 px-4 lg:px-8">
-      <Link :href="route('home')" class="flex items-center gap-2">
-        <div class="flex size-8 items-center justify-center rounded-lg bg-brand text-brand-ink">
-          <Package class="size-4" />
+    <header
+      class="sticky top-0 z-30 border-b border-border bg-surface/80 backdrop-blur-md"
+    >
+      <div class="mx-auto flex h-14 w-full max-w-5xl items-center gap-3 px-4 sm:px-6">
+        <Link :href="route('home')" class="flex items-center gap-2">
+          <div class="flex size-7 items-center justify-center rounded-lg bg-brand text-brand-ink">
+            <Logo class="size-3.5" />
+          </div>
+          <span class="text-sm font-semibold tracking-tight text-ink">POS Kacaw</span>
+        </Link>
+        <div class="ml-auto flex items-center gap-1.5">
+          <slot name="actions" />
+          <ThemeToggle />
         </div>
-        <span class="text-sm font-semibold text-ink">POS Pro</span>
-      </Link>
-      <div class="ml-auto flex items-center gap-2">
-        <slot name="actions" />
-        <ThemeToggle />
       </div>
     </header>
 
@@ -28,10 +40,24 @@ defineProps<{ title: string }>()
       <slot />
     </main>
 
-    <footer class="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 px-4 py-6 text-xs text-ink-subtle">
-      <span>POS Pro</span>
-      <Link :href="route('about')" class="transition hover:text-ink">Tentang</Link>
-      <Link :href="route('donate.index')" class="transition hover:text-ink">Dukung</Link>
+    <footer class="border-t border-border">
+      <div
+        class="mx-auto flex w-full max-w-5xl flex-wrap items-center gap-x-5 gap-y-2 px-4 py-6 text-xs
+               text-ink-subtle sm:px-6"
+      >
+        <span class="text-ink-muted">POS Kacaw</span>
+        <Link :href="route('donate.index')" class="transition hover:text-ink">Dukung</Link>
+        <a
+          href="https://github.com/karuhun-developer/pos-android"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="flex items-center gap-1.5 transition hover:text-ink"
+        >
+          <GithubIcon class="size-3.5" />
+          GitHub
+        </a>
+        <span class="ml-auto">Gratis 100%</span>
+      </div>
     </footer>
 
     <FlashToast />

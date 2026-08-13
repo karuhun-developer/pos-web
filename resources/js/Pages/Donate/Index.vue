@@ -56,7 +56,7 @@ const formatted = computed(() => formatRupiah(form.amount))
 </script>
 
 <template>
-  <GuestLayout title="Dukung POS Pro">
+  <GuestLayout title="Dukung POS Kacaw">
     <template #actions>
       <Link v-if="page.props.auth.user" :href="route('dashboard')">
         <Button variant="outline" size="sm">Dashboard</Button>
@@ -70,9 +70,9 @@ const formatted = computed(() => formatRupiah(form.amount))
          uangnya dikirim, dan bagaimana mencatatnya. -->
     <div class="mx-auto w-full max-w-xl space-y-6 px-4 py-10">
       <header>
-        <h1 class="text-2xl font-semibold text-ink">Dukung POS Pro</h1>
+        <h1 class="text-2xl font-semibold tracking-tight text-ink">Dukung POS Kacaw</h1>
         <p class="mt-2 text-sm text-ink-muted">
-          {{ pay.note ?? 'Aplikasinya gratis dan tetap gratis. Donasi dipakai untuk biaya server.' }}
+          {{ pay.note ?? 'Aplikasinya 100% gratis dan akan tetap begitu — donasi murni sukarela, dipakai buat biaya server.' }}
           <template v-if="supporters">
             {{ formatNumber(supporters) }} orang sudah ikut menopang.
           </template>

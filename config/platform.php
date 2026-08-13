@@ -7,23 +7,22 @@ return [
     | Identitas rilis
     |--------------------------------------------------------------------------
     |
-    | Dipakai halaman /tentang. Versinya dibaca dari env supaya server yang
-    | sedang berjalan bisa menyebut versinya sendiri tanpa ganti kode — pipeline
-    | deploy tinggal mengisi APP_VERSION dari tag git. Tautan repo sengaja
-    | konstan: mengubahnya memang perubahan kode, bukan konfigurasi server.
+    | Tautan repo sengaja konstan: mengubahnya memang perubahan kode, bukan
+    | konfigurasi server. Nomor versi aplikasi Android TIDAK ditulis di sini —
+    | App\Actions\Platform\FetchAndroidRelease membacanya langsung dari rilis
+    | GitHub, supaya angka yang dipajang tidak pernah ketinggalan dari rilis
+    | sebenarnya.
     |
     */
-
-    'version' => env('APP_VERSION', '0.1.0-dev'),
 
     'repository' => 'https://github.com/karuhun-developer/pos-web',
 
     'android_repository' => 'https://github.com/karuhun-developer/pos-android',
 
     /*
-     * Unduhan APK diarahkan ke halaman "latest release" GitHub, bukan ke berkas
-     * versi tertentu: tautan ke APK spesifik jadi basi tiap rilis dan diam-diam
-     * membagikan versi lama.
+     * Cadangan kalau GitHub tidak bisa dihubungi: halaman "latest release",
+     * bukan berkas APK versi tertentu — tautan ke satu berkas jadi basi tiap
+     * rilis dan diam-diam membagikan versi lama.
      */
     'android_download' => 'https://github.com/karuhun-developer/pos-android/releases/latest',
 
