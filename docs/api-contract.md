@@ -371,9 +371,14 @@ bersifat lokal-FE; server menerimanya tapi mengabaikan untuk logika (kecuali ech
 ## 7. RBAC (ringkas)
 
 Role per-toko (spatie teams=store): `owner`, `cashier`. Permission:
-`sync.push`, `sync.pull`, `catalog.manage`, `reports.view`, `cashier.session`.
-`cashier` boleh `sync.*` + `cashier.session`, tapi tidak `catalog.manage`.
-Route sync butuh `sync.push`/`sync.pull`; kurang izin → `403`.
+`sync.push`, `sync.pull`, `catalog.manage`, `reports.view`, `cashier.session`,
+`cashflow.manage`, `sale.void`.
+`cashier` boleh `sync.*` + `cashier.session` + `cashflow.manage`, tapi tidak
+`catalog.manage`. Route sync butuh `sync.push`/`sync.pull`; kurang izin → `403`.
+
+Di luar toko ada role platform **`superadmin`** (permission `platform.manage`,
+`donation.manage`) yang hanya dipakai UI web `/admin` — tidak ada endpoint API v1 yang
+memeriksanya. Lihat [`features/rbac-stores.md`](features/rbac-stores.md).
 
 ---
 

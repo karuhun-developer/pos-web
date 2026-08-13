@@ -2,8 +2,105 @@
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
+@source '../js/**/*.vue';
+@source '../js/**/*.ts';
 
-@theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+/* Dark mode dikendalikan class `.dark` di <html>, bukan media query — supaya
+   toggle manual di UI menang atas setelan OS. Lihat resources/js/lib/theme.ts. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * Token warna. Nilainya disamakan dengan POS Kacaw di Android
+ * (`src/assets/index.css`) — satu produk, satu rasa warna: monokrom,
+ * aksennya hitam-arang di terang dan putih-abu di gelap, tanpa warna merek
+ * yang berteriak. Palet chart tetap berwarna dan sudah divalidasi ulang
+ * terhadap surface baru (#f1f2f3 terang / #1f252b gelap) — jangan ganti
+ * surface tanpa menjalankan ulang validator palet.
+ */
+:root {
+  --color-surface: #f1f2f3;
+  --color-surface-raised: #ffffff;
+  --color-surface-sunken: #e9ebed;
+  --color-border: #dcdee0;
+  --color-border-strong: #c3c7cb;
+  --color-ink: #1c2024;
+  --color-ink-muted: #5e646a;
+  --color-ink-subtle: #838a91;
+  --color-brand: #222933;
+  --color-brand-ink: #ffffff;
+  --color-brand-soft: #e9ebed;
+  --color-success: #1baf7a;
+  --color-warning: #eda100;
+  --color-danger: #e34948;
+  --color-danger-soft: #fdecec;
+}
+
+.dark {
+  --color-surface: #1f252b;
+  --color-surface-raised: #272f37;
+  --color-surface-sunken: #191e23;
+  --color-border: #363f48;
+  --color-border-strong: #4a545e;
+  --color-ink: #f3f5f7;
+  --color-ink-muted: #989fa8;
+  --color-ink-subtle: #78808a;
+  --color-brand: #e2e5e8;
+  --color-brand-ink: #1c2024;
+  --color-brand-soft: #303942;
+  --color-success: #199e70;
+  --color-warning: #c98500;
+  --color-danger: #e66767;
+  --color-danger-soft: #3a1e1e;
+}
+
+@theme inline {
+  --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+
+  --color-surface: var(--color-surface);
+  --color-surface-raised: var(--color-surface-raised);
+  --color-surface-sunken: var(--color-surface-sunken);
+  --color-border: var(--color-border);
+  --color-border-strong: var(--color-border-strong);
+  --color-ink: var(--color-ink);
+  --color-ink-muted: var(--color-ink-muted);
+  --color-ink-subtle: var(--color-ink-subtle);
+  --color-brand: var(--color-brand);
+  --color-brand-ink: var(--color-brand-ink);
+  --color-brand-soft: var(--color-brand-soft);
+  --color-success: var(--color-success);
+  --color-warning: var(--color-warning);
+  --color-danger: var(--color-danger);
+  --color-danger-soft: var(--color-danger-soft);
+}
+
+@layer base {
+  html {
+    color-scheme: light;
+  }
+
+  html.dark {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-surface text-ink antialiased;
+  }
+
+  *,
+  ::after,
+  ::before {
+    border-color: var(--color-border);
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-brand;
+  }
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }

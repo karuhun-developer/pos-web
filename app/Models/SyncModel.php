@@ -44,4 +44,17 @@ abstract class SyncModel extends Model
     {
         return $this->belongsTo(Store::class);
     }
+
+    /**
+     * Tombstone tidak boleh ke-resolve jadi halaman. Penghapusan di sini
+     * bukan SoftDeletes Eloquent (kolomnya epoch ms, bukan datetime), jadi
+     * filternya dipasang sendiri di route model binding — kalau tidak, URL
+     * produk yang sudah dihapus tetap terbuka dan bisa diedit ulang.
+     */
+    public function resolveRouteBinding($value, $field = null)
+    {
+        return $this->resolveRouteBindingQuery($this, $value, $field)
+            ->whereNull('deleted_at')
+            ->first();
+    }
 }

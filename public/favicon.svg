@@ -1,0 +1,10 @@
+<!-- Lambang POS Kacaw/POS Pro — sumbernya sama dengan resources/js/Components/Logo.vue:
+     struk dengan sobekan di bawah, barisnya lubang (fill-rule evenodd) supaya
+     warna kotak di belakangnya yang tembus, bukan warna kedua yang harus ikut
+     diganti kalau warna merek berubah. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect width="64" height="64" rx="14" fill="#222933"/>
+  <g transform="translate(12.8 12.8) scale(1.6)">
+    <path fill="#ffffff" fill-rule="evenodd" clip-rule="evenodd" d="M6 2.5H18A1.5 1.5 0 0 1 19.5 4V21.5L17.625 19.9L15.75 21.5L13.875 19.9L12 21.5L10.125 19.9L8.25 21.5L6.375 19.9L4.5 21.5V4A1.5 1.5 0 0 1 6 2.5ZM8 6.4H16A0.9 0.9 0 0 1 16 8.2H8A0.9 0.9 0 0 1 8 6.4ZM8 10.2H16A0.9 0.9 0 0 1 16 12H8A0.9 0.9 0 0 1 8 10.2ZM8 14H12A0.9 0.9 0 0 1 12 15.8H8A0.9 0.9 0 0 1 8 14Z"/>
+  </g>
+</svg>
