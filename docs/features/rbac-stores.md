@@ -52,6 +52,24 @@ sebagai penanda "lintas platform".
 - `php artisan pos:superadmin {email} [--revoke]` memakai Action yang sama, jadi CLI dan
   panel admin tidak pernah berbeda perilaku.
 
+### Bikin akun superadmin pertama
+Dua cara, keduanya lewat `SetSuperadmin` yang sama:
+
+```bash
+# a) user-nya sudah ada (mis. daftar lewat web/Google) → tinggal dinaikkan
+php artisan pos:superadmin kamu@email.com
+
+# b) server baru, belum ada siapa-siapa → isi SUPERADMIN_* di .env lalu
+php artisan db:seed --class=SuperadminSeeder
+```
+
+`SuperadminSeeder` idempoten dan **melewati dirinya sendiri kalau
+`SUPERADMIN_PASSWORD` kosong** — akun platform dengan password tebakan lebih berbahaya
+daripada tidak ada akun sama sekali. Password akun yang sudah ada tidak pernah ditimpa
+(menjalankan seeder lagi setelah deploy tidak boleh mengembalikan password lama), dan
+akunnya ikut dibuatkan toko sendiri karena middleware `store` menolak semua halaman area
+toko — termasuk `/dashboard`, tujuan setelah login — untuk user tanpa toko aktif.
+
 ## Kepemilikan data di route web
 
 Policy di `app/Policies/` (trait `Concerns\ChecksStoreOwnership`) memeriksa berurutan:

@@ -61,6 +61,10 @@ Format mengikuti [Keep a Changelog](https://keepachangelog.com/) & [SemVer](http
   rekening, tautan Saweria, catatan) dan disimpan di tabel `settings` key/value —
   bukan `.env`, karena nomor rekening berubah tanpa alasan teknis dan tidak layak
   menunggu deploy. Lihat `docs/features/donations.md`.
+- **`SuperadminSeeder`** — akun platform pertama dari `SUPERADMIN_*` di `.env`
+  (`config/platform.php`), idempoten, tidak menimpa password akun yang sudah ada, dan
+  **dilewati kalau passwordnya kosong**. Untuk user yang sudah ada tetap pakai
+  `php artisan pos:superadmin {email}`.
 - **Mask ribuan untuk input uang** (`MoneyInput.vue`, seperti di POS Kacaw): harga jual,
   harga modal, entri kas, dan nominal donasi. `type="number"` ditinggalkan karena melarang
   pemisah ribuan; nilai yang dikirim tetap integer rupiah.

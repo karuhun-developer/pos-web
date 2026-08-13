@@ -82,7 +82,7 @@ Dikunci `tests/Feature/Web/PageSmokeTest.php`.
 | Donasi | `donate.*` | lihat [donations.md](donations.md) |
 
 `/tentang` sengaja terbuka tanpa login: orang yang menimbang mau memakai POS Pro harus
-bisa melihat versi dan kodenya sebelum bikin akun. Isinya dari `config/about.php` —
+bisa melihat versi dan kodenya sebelum bikin akun. Isinya dari `config/platform.php` —
 versinya dari `APP_VERSION` (pipeline deploy mengisinya dari tag git, jadi server yang
 berjalan bisa menyebut versinya sendiri tanpa ganti kode), tautan repo konstan karena
 mengubahnya memang perubahan kode. Tautannya juga ada di footer `GuestLayout` dan di

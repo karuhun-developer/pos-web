@@ -57,8 +57,13 @@ cp .env.example .env
 php artisan key:generate
 # atur koneksi MySQL di .env (DB_DATABASE=pos_pro, dst)
 php artisan migrate --seed        # bikin skema + role/permission + akun demo
+npm install && npm run build      # aset UI web (Inertia + Vue)
 php artisan serve                 # http://localhost:8000
 ```
+
+Akun superadmin: isi `SUPERADMIN_EMAIL`/`SUPERADMIN_PASSWORD` di `.env` sebelum
+`--seed` (tanpa password, seeder-nya sengaja dilewati), atau naikkan user yang sudah ada
+dengan `php artisan pos:superadmin kamu@email.com`.
 
 ### Konfigurasi `.env` penting
 

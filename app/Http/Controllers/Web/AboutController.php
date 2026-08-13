@@ -17,9 +17,9 @@ class AboutController extends Controller
     {
         return Inertia::render('About', [
             'app' => [
-                'version' => config('about.version'),
-                'repository' => config('about.repository'),
-                'android_repository' => config('about.android_repository'),
+                'version' => config('platform.version'),
+                'repository' => config('platform.repository'),
+                'android_repository' => config('platform.android_repository'),
             ],
         ]);
     }

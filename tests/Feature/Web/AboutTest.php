@@ -7,7 +7,7 @@ use Inertia\Testing\AssertableInertia;
  * memakai POS Pro harus bisa melihat versi dan kodenya sebelum bikin akun.
  */
 it('shows the version and repository links to a guest', function () {
-    config(['about.version' => '1.2.3']);
+    config(['platform.version' => '1.2.3']);
 
     $this->get(route('about'))
         ->assertOk()
