@@ -25,7 +25,7 @@ session, CSRF, maupun middleware Inertia. Controller **API** tetap memakai atrib
 
 | Berkas | Isi | Middleware |
 |---|---|---|
-| `routes/web/guest.php` | landing, tentang, login/daftar, OAuth Google, halaman donasi publik | `guest` / publik |
+| `routes/web/guest.php` | landing, login/daftar, OAuth Google, halaman donasi publik | `guest` / publik |
 | `routes/web/app.php` | dashboard, produk, kategori, transaksi, kas, sesi, laporan, impor/ekspor, pengaturan toko | `auth`, **`store`** |
 | `routes/web/admin.php` | area platform | `auth`, **`superadmin`** |
 
@@ -77,23 +77,41 @@ Dikunci `tests/Feature/Web/PageSmokeTest.php`.
 
 | Halaman | Route | Isi |
 |---|---|---|
-| Landing | `home` | ringkasan produk, ajakan daftar, unduh APK Android |
-| Tentang | `about` | versi, keterangan singkat, unduh APK, tautan repo GitHub |
+| Landing | `home` | promosi POS Kacaw: unduh APK, fitur, "dua aplikasi satu data", kode sumber |
 | Donasi | `donate.*` | lihat [donations.md](donations.md) |
 
-`/tentang` sengaja terbuka tanpa login: orang yang menimbang mau memakai POS Pro harus
-bisa melihat versi dan kodenya sebelum bikin akun. Isinya dari `config/platform.php` —
-versinya dari `APP_VERSION` (pipeline deploy mengisinya dari tag git, jadi server yang
-berjalan bisa menyebut versinya sendiri tanpa ganti kode), tautan repo konstan karena
-mengubahnya memang perubahan kode. Tautannya juga ada di footer `GuestLayout` dan di
-dasar sidebar `AppLayout`.
+**Yang dipromosikan ke publik adalah POS Kacaw**, aplikasi Androidnya — POS Pro cuma
+nama panel webnya dan baru muncul setelah orangnya masuk. Karena itu header/footer
+`GuestLayout`, `<title>`, dan copy halaman publik memakai nama POS Kacaw. Halaman
+`/tentang` yang dulu terpisah **dilebur ke landing**: satu halaman publik lebih gampang
+dijaga daripada dua halaman yang isinya saling menyalin.
 
-Tombol unduh (landing dan `/tentang`) menunjuk `platform.android_download`, yaitu halaman
-**`releases/latest`** GitHub — bukan berkas APK versi tertentu. Tautan ke satu berkas jadi
-basi tiap rilis dan diam-diam membagikan versi lama; halaman rilis selalu benar sendiri.
+Judul tab dirakit di `resources/js/app.ts`: `title ? "${title} · POS Kacaw" : "POS Kacaw"`.
+Halaman mengirim judul spesifiknya saja — mengirim nama produk lagi bikin
+"POS Pro · POS Pro" seperti sebelumnya.
+
+### Nomor versi & tombol unduh
+`app/Actions/Platform/FetchAndroidRelease.php` membaca rilis terbaru dari GitHub API
+(`repos/karuhun-developer/pos-android/releases/latest`) dan mengembalikan tag, tautan
+APK, ukuran berkas, serta tanggal rilis. **Versinya tidak ditulis di kode**: angka yang
+diketik tangan pasti ketinggalan sekali dua kali rilis dan diam-diam membohongi
+pengunjung. Hasilnya di-cache 6 jam (kegagalan cuma 5 menit), dan kalau GitHub tidak
+bisa dihubungi tombolnya jatuh ke `platform.android_download`
+(halaman `releases/latest`) tanpa nomor versi. Dikunci `tests/Feature/Web/LandingTest.php`.
 
 Logo GitHub ditulis sebagai SVG di `resources/js/Components/GithubIcon.vue` — `@lucide/vue`
 membuang ikon merek, jadi tidak ada yang bisa diimpor.
+
+## Warna & lambang
+Token warna di `resources/css/app.css` disamakan dengan POS Kacaw di Android
+(`pos-kacaw/src/assets/index.css`): monokrom, aksen hitam-arang di terang (`#222933`)
+dan putih-abu di gelap (`#e2e5e8`) — satu produk, satu rasa warna. Palet chart tetap
+berwarna dan sudah divalidasi ulang terhadap surface baru (`#f1f2f3` / `#1f252b`).
+
+Lambangnya satu berkas: `resources/js/Components/Logo.vue` (struk dengan sobekan bawah,
+barisnya lubang `fill-rule="evenodd"` supaya ikut warna induk). Sumber yang sama dipakai
+`public/favicon.svg`, `favicon.ico`, `apple-touch-icon.png`, dan ikon peluncur Android di
+`pos-kacaw/android/app/src/main/res/mipmap-*`.
 
 ## Halaman area toko
 

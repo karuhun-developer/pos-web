@@ -72,19 +72,34 @@ Format mengikuti [Keep a Changelog](https://keepachangelog.com/) & [SemVer](http
   simbologinya) dan di kotak cari daftar produk. `BarcodeDetector` bawaan browser kalau
   ada, `@zxing/browser` sebagai cadangan lewat `import()` dinamis supaya dekodernya tidak
   ikut di bundle utama. Tombol disembunyikan di browser/konteks tanpa kamera.
-- **Halaman `/tentang`**: versi yang sedang berjalan (`APP_VERSION`, diisi pipeline deploy
-  dari tag git), keterangan singkat, dan tautan ke repo web & Android. Terbuka tanpa
-  login — orang yang menimbang mau memakai POS Pro harus bisa melihat kodenya sebelum
-  bikin akun. Tautannya ada di footer halaman publik dan dasar sidebar area toko.
-- **Unduh aplikasi Android** dari landing dan `/tentang` — mengarah ke halaman
-  `releases/latest` di GitHub, bukan berkas APK versi tertentu (tautan ke satu berkas
-  jadi basi tiap rilis dan diam-diam membagikan versi lama).
+- **Landing publik atas nama POS Kacaw**, bukan POS Pro: yang dipromosikan ke orang luar
+  adalah aplikasi Androidnya; POS Pro cuma nama panel webnya dan baru muncul setelah
+  masuk. Halaman `/tentang` yang terpisah **dilebur ke landing** — dua halaman publik
+  yang isinya saling menyalin cuma menggandakan tempat copy-nya basi. Judul tab dirakit
+  sekali di `resources/js/app.ts` (`"{judul} · POS Kacaw"`) supaya tidak lagi berbunyi
+  "POS Pro · POS Pro", dan halaman publik mengirim `description` untuk SEO.
+- **Nomor versi & tombol unduh dari rilis GitHub sungguhan**
+  (`app/Actions/Platform/FetchAndroidRelease.php`): tag, tautan APK, ukuran berkas, dan
+  tanggal rilis dibaca dari `repos/karuhun-developer/pos-android/releases/latest`,
+  di-cache 6 jam (gagal 5 menit). Versi yang diketik tangan di config **dihapus**
+  (`APP_VERSION`) karena pasti ketinggalan rilis dan diam-diam membohongi pengunjung;
+  kalau GitHub tak terjangkau tombolnya jatuh ke halaman `releases/latest` tanpa nomor.
+  Dikunci `tests/Feature/Web/LandingTest.php`.
+- **Lambang & ikon** (`resources/js/Components/Logo.vue`): struk dengan sobekan bawah,
+  satu path `fill-rule="evenodd"` sehingga barisnya lubang dan ikut warna induk. Sumber
+  yang sama menurunkan `favicon.svg`, `favicon.ico`, `apple-touch-icon.png`, serta ikon
+  peluncur & splash Android di repo POS Kacaw.
+- **Token warna disamakan dengan POS Kacaw** (`resources/css/app.css`): monokrom, aksen
+  `#222933` di mode terang dan `#e2e5e8` di gelap — dulu web-nya biru sendirian padahal
+  satu produk dengan Androidnya. Palet kategorikal chart tetap berwarna dan sudah
+  divalidasi ulang terhadap dua surface baru (`node scripts/validate_palette.js`, light
+  & dark PASS).
 - **Docs**: `docs/features/{web-ui,donations,import-export}.md`;
   `authentication-google.md` & `rbac-stores.md` diperbarui; `api-contract.md` §7
   non-goal "UI web admin"/"impor massal" dicabut dari PRD.
-- **Test**: `tests/Feature/Web/` — 55 kasus (kepemilikan, sync dari web, panel admin,
+- **Test**: `tests/Feature/Web/` — 57 kasus (kepemilikan, sync dari web, panel admin,
   auth web + Google, impor/ekspor, donasi + moderasi + pengaturannya, laporan cetak +
-  gating `reports.view`, halaman tentang, smoke semua halaman).
+  gating `reports.view`, rilis Android di landing, smoke semua halaman).
 
 ### Fixed
 - **Props Inertia dievaluasi sebelum konteks toko ada** — `Inertia\Middleware::handle()`
