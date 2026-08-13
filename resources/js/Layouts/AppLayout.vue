@@ -7,6 +7,7 @@ import {
   Boxes,
   FileSpreadsheet,
   Heart,
+  Info,
   LayoutDashboard,
   LogOut,
   Menu,
@@ -116,7 +117,7 @@ function logout() {
         </Link>
       </nav>
 
-      <div class="border-t border-border p-3">
+      <div class="space-y-0.5 border-t border-border p-3">
         <Link
           :href="route('donate.index')"
           class="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-ink-muted
@@ -124,6 +125,14 @@ function logout() {
         >
           <Heart class="size-4 shrink-0" />
           Dukung POS Pro
+        </Link>
+        <Link
+          :href="route('about')"
+          class="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-ink-muted
+                 transition hover:bg-surface-sunken hover:text-ink"
+        >
+          <Info class="size-4 shrink-0" />
+          Tentang
         </Link>
       </div>
     </aside>

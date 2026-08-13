@@ -28,6 +28,12 @@ defineProps<{ title: string }>()
       <slot />
     </main>
 
+    <footer class="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 px-4 py-6 text-xs text-ink-subtle">
+      <span>POS Pro</span>
+      <Link :href="route('about')" class="transition hover:text-ink">Tentang</Link>
+      <Link :href="route('donate.index')" class="transition hover:text-ink">Dukung</Link>
+    </footer>
+
     <FlashToast />
   </div>
 </template>

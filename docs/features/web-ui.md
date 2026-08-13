@@ -25,7 +25,7 @@ session, CSRF, maupun middleware Inertia. Controller **API** tetap memakai atrib
 
 | Berkas | Isi | Middleware |
 |---|---|---|
-| `routes/web/guest.php` | landing, login/daftar, OAuth Google, halaman donasi publik | `guest` / publik |
+| `routes/web/guest.php` | landing, tentang, login/daftar, OAuth Google, halaman donasi publik | `guest` / publik |
 | `routes/web/app.php` | dashboard, produk, kategori, transaksi, kas, sesi, laporan, impor/ekspor, pengaturan toko | `auth`, **`store`** |
 | `routes/web/admin.php` | area platform | `auth`, **`superadmin`** |
 
@@ -72,6 +72,24 @@ karena UI menyembunyikannya berdasarkan permission. Karena itu blok `auth` di
 `HandleInertiaRequests` berupa **closure**, yang baru diresolve saat halaman dirender
 (di dalam controller, setelah semua middleware jalan).
 Dikunci `tests/Feature/Web/PageSmokeTest.php`.
+
+## Halaman publik
+
+| Halaman | Route | Isi |
+|---|---|---|
+| Landing | `home` | ringkasan produk + ajakan daftar |
+| Tentang | `about` | versi, keterangan singkat, tautan repo GitHub |
+| Donasi | `donate.*` | lihat [donations.md](donations.md) |
+
+`/tentang` sengaja terbuka tanpa login: orang yang menimbang mau memakai POS Pro harus
+bisa melihat versi dan kodenya sebelum bikin akun. Isinya dari `config/about.php` —
+versinya dari `APP_VERSION` (pipeline deploy mengisinya dari tag git, jadi server yang
+berjalan bisa menyebut versinya sendiri tanpa ganti kode), tautan repo konstan karena
+mengubahnya memang perubahan kode. Tautannya juga ada di footer `GuestLayout` dan di
+dasar sidebar `AppLayout`.
+
+Logo GitHub ditulis sebagai SVG di `resources/js/Components/GithubIcon.vue` — `@lucide/vue`
+membuang ikon merek, jadi tidak ada yang bisa diimpor.
 
 ## Halaman area toko
 
@@ -148,7 +166,7 @@ Tema ECharts: `resources/js/charts/theme.ts`.
   `pages.ensure_pages_exist` menyala di luar produksi supaya halaman yang komponennya
   belum dibuat gagal keras di test, bukan jadi "Page not found" di browser.
 - Test: `tests/Feature/Web/{ProductOwnershipTest,WebSyncTest,AdminPanelTest,WebAuthTest,
-  ImportExportTest,DonationTest,DonationSettingsTest,PageSmokeTest,ReportPrintTest}.php`.
+  ImportExportTest,DonationTest,DonationSettingsTest,AboutTest,PageSmokeTest,ReportPrintTest}.php`.
 
 ## Area platform (`/admin`)
 Lihat juga [rbac-stores.md](rbac-stores.md) untuk mekanisme role superadmin.

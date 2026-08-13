@@ -61,12 +61,16 @@ Format mengikuti [Keep a Changelog](https://keepachangelog.com/) & [SemVer](http
   rekening, tautan Saweria, catatan) dan disimpan di tabel `settings` key/value —
   bukan `.env`, karena nomor rekening berubah tanpa alasan teknis dan tidak layak
   menunggu deploy. Lihat `docs/features/donations.md`.
+- **Halaman `/tentang`**: versi yang sedang berjalan (`APP_VERSION`, diisi pipeline deploy
+  dari tag git), keterangan singkat, dan tautan ke repo web & Android. Terbuka tanpa
+  login — orang yang menimbang mau memakai POS Pro harus bisa melihat kodenya sebelum
+  bikin akun. Tautannya ada di footer halaman publik dan dasar sidebar area toko.
 - **Docs**: `docs/features/{web-ui,donations,import-export}.md`;
   `authentication-google.md` & `rbac-stores.md` diperbarui; `api-contract.md` §7
   non-goal "UI web admin"/"impor massal" dicabut dari PRD.
-- **Test**: `tests/Feature/Web/` — 54 kasus (kepemilikan, sync dari web, panel admin,
+- **Test**: `tests/Feature/Web/` — 55 kasus (kepemilikan, sync dari web, panel admin,
   auth web + Google, impor/ekspor, donasi + moderasi + pengaturannya, laporan cetak +
-  gating `reports.view`, smoke semua halaman).
+  gating `reports.view`, halaman tentang, smoke semua halaman).
 
 ### Fixed
 - **Props Inertia dievaluasi sebelum konteks toko ada** — `Inertia\Middleware::handle()`
