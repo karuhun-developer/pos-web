@@ -66,6 +66,21 @@ it('does not leak server-only columns in pull payloads', function () {
         ->and($row['dirty'])->toBe(0);
 });
 
+it('pulls the additive open bill fields without leaking the server origin', function () {
+    $this->postJson('/api/v1/sync/push', [
+        'changes' => [envelope('sales', 'insert', openBillPayload())],
+    ])->assertOk();
+
+    $row = $this->getJson('/api/v1/sync/pull?entity=sales&since=0')->json('changes.0');
+
+    expect($row['status'])->toBe('open')
+        ->and($row['open_bill_label'])->toBe('Beras')
+        ->and($row['opened_at'])->toBe(ms(100))
+        ->and($row['origin_device_id'])->toBe('device-origin-1')
+        ->and($row['sold_at'])->toBeNull()
+        ->and($row)->not->toHaveKey('origin_device');
+});
+
 it('validates the entity query parameter', function () {
     $this->getJson('/api/v1/sync/pull?entity=widgets&since=0')
         ->assertStatus(422)

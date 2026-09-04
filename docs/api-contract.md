@@ -254,6 +254,24 @@ forbidden_entity`.
 6. **FK longgar**: server tidak menolak insert karena parent belum ada (urutan sync
    antar-entity tak dijamin). Relasi disimpan by-id; integritas ditegakkan FE.
 
+### 3.5 Open Bill: lifecycle & kompatibilitas
+
+`sales.status` kini juga menerima `open`. Open Bill dipertukarkan melalui envelope
+`sales` dan `sale_items` yang sama: tidak ada endpoint, versi API, atau bentuk
+`ChangeEnvelope` baru. Penambahan field bersifat **additive**; transaksi lama
+`completed`/`void` tetap valid.
+
+- `open → completed`: hanya perangkat dengan `origin_device_id` yang boleh
+  menyelesaikan transaksi. Saat itu klien memvalidasi ulang stok terbaru dan baru boleh
+  membuat dampak penjualan.
+- `open → tombstone`: perangkat asal membuang Open Bill dengan operasi `delete`;
+  `deleted_at` dipull agar perangkat lain membuang salinannya.
+- `completed → void`: tetap memakai alur void yang ada.
+
+Selama `open`, tidak ada reservasi atau perubahan stok, sesi kasir, akuntansi, laporan,
+atau arus kas. `sale_items` tetap membawa snapshot nama/harga untuk riwayat, tetapi
+snapshot tidak menggantikan validasi segar saat completion.
+
 ---
 
 ## 4. Media
@@ -326,8 +344,11 @@ bersifat lokal-FE; server menerimanya tapi mengabaikan untuk logika (kecuali ech
 | number | string | nomor struk device-prefixed; unik per toko |
 | subtotal / discount / tax / total / paid / change_due | int | minor units |
 | payment_method | string | `cash`\|`qris`\|`transfer`\|… |
-| status | `completed`\|`void` | |
-| sold_at | epoch ms | |
+| status | `open`\|`completed`\|`void` | lihat §3.5 |
+| open_bill_label | string\|null | label kasir Open Bill |
+| opened_at | epoch ms\|null | wajib untuk Open Bill; waktu keranjang ditahan |
+| origin_device_id | uuid\|null | perangkat asal yang boleh menyelesaikan/membuang Open Bill |
+| sold_at | epoch ms\|null | `null` selama Open Bill; waktu selesai untuk transaksi completed/void |
 
 ### sale_items
 | field | tipe | ket |

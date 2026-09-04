@@ -9,6 +9,7 @@ use App\Models\SaleItem;
 use App\Support\DisplayTime;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -32,17 +33,21 @@ class SaleController extends Controller
 
         $query = Sale::query()
             ->whereNull('deleted_at')
-            ->when($filters['q'] !== '', fn ($q) => $q->where('number', 'like', "%{$filters['q']}%"))
+            ->when($filters['q'] !== '', fn ($q) => $q->where(function ($query) use ($filters): void {
+                $query
+                    ->where('number', 'like', "%{$filters['q']}%")
+                    ->orWhere('open_bill_label', 'like', "%{$filters['q']}%");
+            }))
             ->when($filters['status'] !== 'all', fn ($q) => $q->where('status', $filters['status']))
             ->when($filters['method'], fn ($q, $method) => $q->where('payment_method', $method));
 
         // Query string kosong (?from=) berarti "buka batasnya", bukan "pakai
         // default lagi" — kalau tidak, filter tanggal tidak bisa dihapus.
         if ($filters['from']) {
-            $query->where('sold_at', '>=', DisplayTime::startOfDayMs($filters['from']));
+            $query->where(DB::raw('COALESCE(sold_at, opened_at)'), '>=', DisplayTime::startOfDayMs($filters['from']));
         }
         if ($filters['to']) {
-            $query->where('sold_at', '<=', DisplayTime::endOfDayMs($filters['to']));
+            $query->where(DB::raw('COALESCE(sold_at, opened_at)'), '<=', DisplayTime::endOfDayMs($filters['to']));
         }
 
         // Ringkasan dihitung dari query yang SAMA dengan daftarnya (sebelum
@@ -53,7 +58,7 @@ class SaleController extends Controller
             ->first();
 
         return Inertia::render('Sales/Index', [
-            'sales' => $query->orderByDesc('sold_at')->paginate(25)->withQueryString(),
+            'sales' => $query->orderByDesc(DB::raw('COALESCE(sold_at, opened_at)'))->paginate(25)->withQueryString(),
             'filters' => $filters,
             'summary' => [
                 'orders' => (int) ($summary->orders ?? 0),
@@ -77,7 +82,7 @@ class SaleController extends Controller
                 ->where('sale_id', $sale->id)
                 ->whereNull('deleted_at')
                 ->get(),
-            'can_void' => $sale->status !== 'void'
+            'can_void' => $sale->status === 'completed'
                 && request()->user()->can('void', $sale),
         ]);
     }

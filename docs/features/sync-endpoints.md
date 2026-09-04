@@ -29,6 +29,22 @@ compatible** dengan tipe FE (`PushResult`/`PullResult`).
 - Validasi via FormRequest: `SyncPushRequest` (`changes.*.op` in insert/update/delete,
   `payload` array), `SyncPullRequest` (`entity` Rule::in allowlist, `since` integer).
 
+## Open Bill dalam sync
+
+Open Bill tetap memakai entity `sales` dan `sale_items`; endpoint dan bentuk envelope
+tidak berubah. Payload sale Open Bill menambahkan `status: "open"`,
+`open_bill_label`, `opened_at`, dan `origin_device_id`, sementara `sold_at` bernilai
+`null`. Item membawa snapshot nama/harga sebagai catatan keranjang yang ditahan.
+
+- Hanya `origin_device_id` yang boleh mengubah `open` menjadi `completed` atau
+  membuangnya dengan `delete`. Penyelesaian harus memvalidasi stok terbaru terlebih
+  dahulu; dampak stok, sesi kasir, akuntansi, laporan, dan arus kas baru dibuat sesudah
+  completion. Tidak ada reservasi maupun dampak tersebut saat state masih `open`.
+- Discard membuat tombstone seperti delete entity lain. Pull menyebarkan `deleted_at`
+  agar setiap perangkat membuang Open Bill tanpa harus membuat reversal bisnis.
+- `completed → void` tidak berubah. Klien lama dengan transaksi `completed`/`void`
+  tetap kompatibel; field Open Bill tambahan bersifat additive dalam payload full-row.
+
 ## Kode
 - `app/Actions/Sync/PushChanges.php`, `ApplyChange.php`, `PullChanges.php`.
 - `app/Sync/RejectReason.php` (enum), `SyncRejection.php` (exception, `->reason`).

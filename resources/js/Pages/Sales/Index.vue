@@ -80,7 +80,7 @@ watch([status, method, from, to], apply)
           <input
             v-model="search"
             type="search"
-            placeholder="Cari nomor struk…"
+            placeholder="Cari nomor struk atau label Open Bill…"
             class="h-10 w-full rounded-xl border border-border-strong bg-surface-raised pr-3 pl-9 text-sm
                    text-ink placeholder:text-ink-subtle focus:border-brand focus:outline-none"
           />
@@ -92,6 +92,7 @@ watch([status, method, from, to], apply)
           aria-label="Filter status"
         >
           <option value="all">Semua status</option>
+          <option value="open">Open Bill</option>
           <option value="completed">Selesai</option>
           <option value="void">Dibatalkan</option>
         </select>
@@ -133,19 +134,28 @@ watch([status, method, from, to], apply)
 
       <DataTable v-else :columns="COLUMNS" :rows="sales.data">
         <template #cell-number="{ row }">
-          <Link :href="route('sales.show', row.id)" class="font-medium text-brand hover:underline">
-            {{ row.number }}
-          </Link>
+          <div class="min-w-0">
+            <Link :href="route('sales.show', row.id)" class="font-medium text-brand hover:underline">
+              {{ row.number }}
+            </Link>
+            <p v-if="row.open_bill_label" class="mt-0.5 truncate text-xs text-ink-muted">
+              {{ row.open_bill_label }}
+            </p>
+          </div>
         </template>
         <template #cell-sold_at="{ row }">
-          <span class="text-ink-muted">{{ formatDateTime(row.sold_at) }}</span>
+          <span class="text-ink-muted">
+            {{ formatDateTime(row.status === 'open' ? row.opened_at : row.sold_at) }}
+          </span>
         </template>
         <template #cell-payment_method="{ row }">
-          <span class="text-ink-muted">{{ METHOD_LABELS[row.payment_method] ?? row.payment_method }}</span>
+          <span class="text-ink-muted">
+            {{ row.status === 'open' ? '—' : (METHOD_LABELS[row.payment_method] ?? row.payment_method) }}
+          </span>
         </template>
         <template #cell-status="{ row }">
-          <Badge :tone="row.status === 'void' ? 'danger' : 'success'">
-            {{ row.status === 'void' ? 'Dibatalkan' : 'Selesai' }}
+          <Badge :tone="row.status === 'open' ? 'warning' : (row.status === 'void' ? 'danger' : 'success')">
+            {{ row.status === 'open' ? 'Open Bill' : (row.status === 'void' ? 'Dibatalkan' : 'Selesai') }}
           </Badge>
         </template>
         <template #cell-total="{ row }">

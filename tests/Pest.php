@@ -138,3 +138,31 @@ function productPayload(array $overrides = []): array
         'remote_id' => null,
     ], $overrides);
 }
+
+/** Payload Open Bill lengkap (semua kolom sync) untuk mengunci kontrak lifecycle. */
+function openBillPayload(array $overrides = []): array
+{
+    return array_merge([
+        'id' => 'sale-open-1',
+        'session_id' => null,
+        'number' => 'POS-20260904-001',
+        'subtotal' => 18000,
+        'discount' => 0,
+        'tax' => 0,
+        'total' => 18000,
+        'paid' => 0,
+        'change_due' => 0,
+        'payment_method' => 'cash',
+        'status' => 'open',
+        'open_bill_label' => 'Beras',
+        'opened_at' => ms(100),
+        'origin_device_id' => 'device-origin-1',
+        'sold_at' => null,
+        'created_at' => ms(100),
+        'updated_at' => ms(100),
+        'deleted_at' => null,
+        'dirty' => 1,
+        'sync_version' => 0,
+        'remote_id' => null,
+    ], $overrides);
+}

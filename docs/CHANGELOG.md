@@ -5,6 +5,17 @@ Format mengikuti [Keep a Changelog](https://keepachangelog.com/) & [SemVer](http
 
 ## [Unreleased]
 
+### Added — Open Bill
+- **Open Bill tersinkron dan hanya-baca di POS Pro**: lifecycle `open → completed`,
+  `open → tombstoned`, dan `completed → void`; `sold_at` nullable serta field
+  `opened_at`, `open_bill_label`, dan `origin_device_id`. Keranjang open tidak
+  mereservasi/mengubah stok, sesi kasir, akuntansi, laporan, atau arus kas sebelum
+  completion dari perangkat asal dengan validasi stok terbaru. Lihat
+  `docs/features/open-bill.md`.
+- **Daftar dan detail transaksi** menampilkan Open Bill dengan badge warning, label,
+  waktu tahan, dan prefix perangkat asal; pembayaran/kembalian serta semua aksi kasir
+  disembunyikan. Kontrak push/pull tetap additive di API v1.
+
 ### Added — UI Web (Fase 7, branch `feat/web-ui`)
 - **Stack web**: Inertia 2 + Vue 3 + Tailwind v4 + Vite + TypeScript, Ziggy untuk
   `route()` di sisi Vue, ECharts (`vue-echarts`) untuk chart. Route halaman ada di

@@ -76,6 +76,7 @@ class DashboardController extends Controller
     {
         return Sale::query()
             ->whereNull('deleted_at')
+            ->whereIn('status', ['completed', 'void'])
             ->orderByDesc('sold_at')
             ->limit(8)
             ->get(['id', 'number', 'total', 'payment_method', 'status', 'sold_at'])

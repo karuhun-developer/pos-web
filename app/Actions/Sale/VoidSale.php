@@ -27,6 +27,12 @@ class VoidSale
 
     public function handle(Sale $sale): void
     {
+        if ($sale->status === 'open') {
+            throw ValidationException::withMessages([
+                'sale' => 'Open Bill hanya dapat dilanjutkan atau dibatalkan dari perangkat kasir asal.',
+            ]);
+        }
+
         if ($sale->status === 'void') {
             throw ValidationException::withMessages([
                 'sale' => 'Transaksi ini sudah dibatalkan.',

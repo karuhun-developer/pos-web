@@ -87,8 +87,13 @@ return new class extends Migration
             $t->unsignedBigInteger('paid')->default(0);
             $t->bigInteger('change_due')->default(0);
             $t->string('payment_method')->default('cash');
-            $t->string('status')->default('completed'); // completed|void
-            $t->unsignedBigInteger('sold_at');
+            $t->string('status')->default('completed'); // open|completed|void
+            $t->string('open_bill_label')->nullable();
+            $t->unsignedBigInteger('opened_at')->nullable();
+            $t->uuid('origin_device_id')->nullable();
+            $t->unsignedBigInteger('sold_at')->nullable();
+            $t->index(['status', 'opened_at']);
+            $t->index('origin_device_id');
         });
 
         $this->entity('sale_items', function (Blueprint $t) {

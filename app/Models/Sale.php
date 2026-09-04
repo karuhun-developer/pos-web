@@ -20,6 +20,7 @@ class Sale extends SyncModel
             'total' => 'integer',
             'paid' => 'integer',
             'change_due' => 'integer',
+            'opened_at' => 'integer',
             'sold_at' => 'integer',
         ]);
     }

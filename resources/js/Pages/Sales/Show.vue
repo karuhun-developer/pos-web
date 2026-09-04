@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { Link, router } from '@inertiajs/vue3'
 import { ArrowLeft, Ban } from '@lucide/vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
@@ -17,6 +17,7 @@ const props = defineProps<{
 }>()
 
 const confirming = ref(false)
+const isOpenBill = computed(() => props.sale.status === 'open')
 
 const METHOD_LABELS: Record<string, string> = {
   cash: 'Tunai',
@@ -31,10 +32,17 @@ function voidSale() {
     onFinish: () => (confirming.value = false),
   })
 }
+
+function originDevicePrefix(deviceId: string | null): string {
+  return deviceId ? deviceId.slice(0, 8) : '—'
+}
 </script>
 
 <template>
-  <AppLayout :title="`Struk ${sale.number}`" :subtitle="formatDateTime(sale.sold_at)">
+  <AppLayout
+    :title="`Struk ${sale.number}`"
+    :subtitle="formatDateTime(isOpenBill ? sale.opened_at : sale.sold_at)"
+  >
     <template #actions>
       <Link :href="route('sales.index')">
         <Button variant="ghost" size="sm">
@@ -87,12 +95,24 @@ function voidSale() {
           <div class="flex justify-between gap-3">
             <dt class="text-ink-muted">Status</dt>
             <dd>
-              <Badge :tone="sale.status === 'void' ? 'danger' : 'success'">
-                {{ sale.status === 'void' ? 'Dibatalkan' : 'Selesai' }}
+              <Badge :tone="isOpenBill ? 'warning' : (sale.status === 'void' ? 'danger' : 'success')">
+                {{ isOpenBill ? 'Open Bill' : (sale.status === 'void' ? 'Dibatalkan' : 'Selesai') }}
               </Badge>
             </dd>
           </div>
-          <div class="flex justify-between gap-3">
+          <div v-if="isOpenBill" class="flex justify-between gap-3">
+            <dt class="text-ink-muted">Label Open Bill</dt>
+            <dd class="text-right text-ink">{{ sale.open_bill_label ?? '—' }}</dd>
+          </div>
+          <div v-if="isOpenBill" class="flex justify-between gap-3">
+            <dt class="text-ink-muted">Ditahan sejak</dt>
+            <dd class="text-right text-ink tabular-nums">{{ formatDateTime(sale.opened_at) }}</dd>
+          </div>
+          <div v-if="isOpenBill" class="flex justify-between gap-3">
+            <dt class="text-ink-muted">Perangkat asal</dt>
+            <dd class="text-ink tabular-nums">{{ originDevicePrefix(sale.origin_device_id) }}</dd>
+          </div>
+          <div v-if="!isOpenBill" class="flex justify-between gap-3">
             <dt class="text-ink-muted">Metode bayar</dt>
             <dd class="text-ink">{{ METHOD_LABELS[sale.payment_method] ?? sale.payment_method }}</dd>
           </div>
@@ -112,15 +132,18 @@ function voidSale() {
             <dt class="font-medium text-ink">Total</dt>
             <dd class="text-base font-semibold text-ink tabular-nums">{{ formatRupiah(sale.total) }}</dd>
           </div>
-          <div class="flex justify-between gap-3">
+          <div v-if="!isOpenBill" class="flex justify-between gap-3">
             <dt class="text-ink-muted">Dibayar</dt>
             <dd class="text-ink tabular-nums">{{ formatRupiah(sale.paid) }}</dd>
           </div>
-          <div class="flex justify-between gap-3">
+          <div v-if="!isOpenBill" class="flex justify-between gap-3">
             <dt class="text-ink-muted">Kembalian</dt>
             <dd class="text-ink tabular-nums">{{ formatRupiah(sale.change_due) }}</dd>
           </div>
         </dl>
+        <p v-if="isOpenBill" class="mt-4 rounded-xl border border-border bg-surface-sunken p-3 text-sm text-ink-muted">
+          Penyelesaian atau pembatalan Open Bill dilakukan dari perangkat kasir asal.
+        </p>
       </Card>
     </div>
 

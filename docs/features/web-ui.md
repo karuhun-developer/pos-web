@@ -142,7 +142,7 @@ barisnya lubang `fill-rule="evenodd"` supaya ikut warna induk). Sumber yang sama
 | Dashboard | `dashboard` | KPI hari ini, transaksi terakhir |
 | Produk | `products.*` | daftar + cari + filter kategori + **pindai barcode**, form (gambar, barcode, stok), hapus |
 | Kategori | `categories.*` | nama, warna, urutan |
-| Transaksi | `sales.*` | daftar, detail struk, **batalkan** (`sale.void`) |
+| Transaksi | `sales.*` | daftar/detail struk; transaksi selesai dapat **dibatalkan** (`sale.void`), Open Bill hanya dibaca |
 | Arus kas | `cashflow.*` | entri masuk/keluar + kelola kategori kas |
 | Sesi kasir | `sessions.index` | riwayat buka/tutup laci + selisih |
 | Laporan | `reports.index` | lihat bagian laporan di bawah — butuh `reports.view` |
@@ -150,6 +150,20 @@ barisnya lubang `fill-rule="evenodd"` supaya ikut warna induk). Sumber yang sama
 | Impor/Ekspor | `io.*` | lihat [import-export.md](import-export.md) |
 | Pengaturan toko | `store.edit` | ganti nama, daftar anggota |
 | Ganti toko aktif | `stores.switch` | set `current_store_id` (validasi keanggotaan) |
+
+### Open Bill: visibilitas read-only
+
+POS Pro menerima dan menampilkan Open Bill dari aplikasi kasir, tetapi tidak menyediakan
+kontrol resume, bayar, discard, maupun void. Indeks mempunyai filter `Open Bill`, mencari
+nomor struk atau label Open Bill, memakai `opened_at` sebagai waktu transaksi yang
+ditampilkan, dan menaruh label di bawah nomor struk. Status memakai badge peringatan
+`Open Bill`; hanya total transaksi `void` yang dicoret.
+
+Detail Open Bill menunjukkan status, label, waktu ditahan, serta delapan karakter awal
+`origin_device_id`. Metode bayar, dibayar, dan kembalian tidak ditampilkan karena belum
+ada pembayaran. Detail wajib menjelaskan: “Penyelesaian atau pembatalan Open Bill
+dilakukan dari perangkat kasir asal.” `can_void` dari server bernilai false untuk Open
+Bill, sehingga tombol pembatalan tidak pernah dirender.
 
 ## Input uang
 Semua nominal rupiah memakai `resources/js/Components/ui/MoneyInput.vue` (harga jual,

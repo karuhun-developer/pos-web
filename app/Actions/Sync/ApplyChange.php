@@ -49,6 +49,7 @@ class ApplyChange
         $existing = $modelClass::query()->find($id);
 
         if ($op === 'delete') {
+            $this->assertOpenBillOrigin($entity, $existing, $originDevice);
             $this->applyDelete($modelClass, $existing, $id, $payload, $originDevice);
 
             return;
@@ -58,6 +59,7 @@ class ApplyChange
             throw new SyncRejection(RejectReason::InvalidPayload);
         }
 
+        $this->assertOpenBillOrigin($entity, $existing, $originDevice);
         $this->applyUpsert($modelClass, $entity, $existing, $id, $payload, $originDevice);
     }
 
@@ -111,6 +113,9 @@ class ApplyChange
 
         // store_id, sync_version, origin_device dikelola server — jangan dari payload.
         unset($attrs['store_id'], $attrs['sync_version']);
+        if ($entity === 'sales' && $existing !== null) {
+            unset($attrs['origin_device_id']);
+        }
 
         $model = $existing ?? new $modelClass;
         $model->forceFill($attrs);
@@ -118,6 +123,17 @@ class ApplyChange
         $model->origin_device = $originDevice ?? $model->origin_device;
         $model->sync_version = $existing ? (int) $existing->sync_version + 1 : 0;
         $model->save();
+    }
+
+    private function assertOpenBillOrigin(string $entity, ?SyncModel $existing, ?string $originDevice): void
+    {
+        if ($entity !== 'sales' || $existing === null || $existing->status !== 'open') {
+            return;
+        }
+
+        if (! is_string($originDevice) || $existing->origin_device_id !== $originDevice) {
+            throw new SyncRejection(RejectReason::Forbidden);
+        }
     }
 
     /** Ambil hanya key payload yang benar-benar kolom tabel (buang dirty/remote_id/dll). */
